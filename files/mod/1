@@ -1,0 +1,13 @@
+[anchor=roles][/anchor]Role Assignments
+
+[code]import random, pprint
+
+shuffledPlayers = players[:]
+random.shuffle(shuffledPlayers)
+
+#assign roles
+roles = dict(zip(shuffledPlayers,setups[setup]))
+
+pprint.pprint(roles)[/code]
+
+ROLES

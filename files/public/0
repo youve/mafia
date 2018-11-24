@@ -1,0 +1,25 @@
+[color=grey][center][size=400][b]Newbie GAMENUMBER | GAMETITLE[/b][/size][/center]
+
+DESCRIPTION[/color]
+
+[line]75[/line]
+[color=grey][b]Moderated by Plotinus[/b][/color]
+
+[color=grey][b]Alive:[/b][/color]
+[list=1]
+NUMBEREDPLAYERLIST[/list]
+
+[spoiler=Dead (0)][list=1]
+[*][/list][/spoiler]
+
+[spoiler=Spectators (1)][list][*]hubris[/list][/spoiler]
+
+[spoiler=Original Playerlist(9)][color=grey][b]Original Playerlist:[/b][/color]
+[list=1]
+NUMBEREDPLAYERLIST[/list][/spoiler]
+
+[area=Events][/area]
+
+[spoiler=Vote Counter Settings][area=Living Players]PLAYERLIST[/area]
+
+[area=Links][/area][/spoiler]
