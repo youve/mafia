@@ -16,7 +16,7 @@ When I post a votecount during the dayphase, I like to increase the size of the 
 
 ## ruleOf3.py
 
-When you are a member of the town, not knowing anybody's alignment but you're own, you're approximately equally likely to pay attention to anybody. Suppose there are 13 players alive, 1 is you, and 3 of them are mafia. When you mention 3 people in a post, then 9/12*8/11*7/10 == 38% of the time, all 3 people you mention will be town. 49% of the time, one will be mafia. 12% of the time, 2 will be mafia, and <1% of the time all three will be mafia.
+When you are a member of the town, not knowing anybody's alignment but you're own, you're approximately equally likely to pay attention to anybody. Suppose there are 13 players alive, 1 is you, and 3 of them are mafia. When you mention 3 people in a post, then 9/12×8/11×7/10 == 38% of the time, all 3 people you mention will be town. 49% of the time, one will be mafia. 12% of the time, 2 will be mafia, and <1% of the time all three will be mafia.
 
 When you are a member of the mafia, you won't follow this pattern at all. You will either talk about your fellow mafiosos too much or too little. You can use this script to get a feeling for how often your posts should be a townies vs. about mafiosos.
 
