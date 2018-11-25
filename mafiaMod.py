@@ -35,6 +35,7 @@ parser.add_argument('setup', metavar='setup', type=str, choices=setups.keys(),
                     help='Have the playerlist copied and ready to go.')
 parser.add_argument('number', metavar='gamenumber', type=int, help="Game number")
 parser.add_argument('title', metavar="gametitle", type=str, help="Name of the theme")
+parser.add_argument('-u', '--username' metavar="username", type=str, help="Moderator's username", default="Plotinus", nargs="?")
 parser.add_argument('totalPlayers', metavar="totalPlayers", type=int, help="How many players", nargs='?', default=9)
 
 args = parser.parse_args()
@@ -84,8 +85,6 @@ roles = dict(zip(shuffledPlayers,setups[setup]))
 for role in roles:
     print(role[0], ':', role[1]) #mafia goon : player1
 
-#TODO: set these variables: PUBLICTHREAD, MAFIATHREAD, MODTHREAD, DEADTHREAD, ICTHREAD, LINK, TITLE, EXPLANATION, DESCRIPTION]
-
 def makeOP(whichThread):
     print(f"Making {whichThread} thread")
     browser = webdriver.Firefox()
@@ -96,7 +95,7 @@ def makeOP(whichThread):
     if "Login" in browser.title:
         elem = browser.find_element_by_name("username")
         elem.clear()
-        elem.send_keys("Plotinus")
+        elem.send_keys(args.username)
         elem = browser.find_element_by_name('autologin')
         elem.click()
         elem = browser.find_element_by_name('viewonline')
@@ -145,7 +144,7 @@ def readFile(folder, file): #may need more replacements as more files added
         line = line.replace('ICTITLE', ICTITLE)
     return post
 
-def sendRolePM(recipient, role): #if player IC, link to IC thread
+def sendRolePM(recipient, role):
     print(f"Sending {recipient} their role")
     browser.get('https://forum.mafiascum.net/ucp.php?i=pm&mode=compose')
     elem = browser.find_element_by_name("username_list")
@@ -156,6 +155,8 @@ def sendRolePM(recipient, role): #if player IC, link to IC thread
     elem.send_keys(f"Newbie {args.number} | {args.title.title()} | Role PM")
     elem = browser.find_element_by_name("message")
     elem.clear()
+    if recipient == ICPLAYER:
+        elem.send_keys(f"Hi {recipient}! Thanks so much for ICing. I've made you an [url={ICTHREAD}]IC Thread here[/url]. Have fun!\n\n")
     post = readFile('roles', role)
     for line in post:
         elem.send_keys(line) 
