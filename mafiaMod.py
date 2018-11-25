@@ -12,8 +12,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-logging.basicConfig(filename='log-mafiaMod.txt', level=logging.DEBUG, format='
-%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='log-mafiaMod.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.debug("Start of program.")
 
 #TODO: set these variables: PUBLICTHREAD, MAFIATHREAD, MODTHREAD, DEADTHREAD, ICTHREAD, GAMENUMBER, GAMETITLE, NUMBEREDPLAYERLIST, PLAYERLIST, LINK, TITLE, EXPLANATION, DESCRIPTION]
@@ -48,7 +47,7 @@ if not args.number:
 if not args.title:
     args.title = input("Enter your game title: ")
 
-try: // try to get playerlist from clipboard
+try: #try to get playerlist from clipboard
     import pyperclip
     players = list(pyperclip.paste().split('\n'))
 except ModuleNotFoundError:
@@ -64,26 +63,51 @@ while len(players) < args.totalPlayers:
 
 logging.debug(f"Playerlist: {', '.join(players)}")
 
-NUMBEREDPLAYERLIST = []
-PLAYERLIST = []
-ICPLAYER = ""
-
-for i, player in enumerate(players):
-    NUMBEREDPLAYERLIST.append(f"{i+1}) {player}")
-    if i == 8:
-        PLAYERLIST.append(player.replace(' (IC)', ''))
-        ICPLAYER = player
-    else:
-        PLAYERLIST.append(player.replace(' (SE)', ''))
-
 shuffledPlayers = players[:]
 random.shuffle(shuffledPlayers)
 
 #assign roles
 roles = dict(zip(shuffledPlayers,setups[setup]))
 
-for role in roles:
-    print(role[0], ':', role[1]) #mafia goon : player1
+for i, role in enumerate(roles):
+    print(role, ':', roles[role]) 
+    if i == 0:
+        MAFIAONEPLAYER = role
+    elif i == 1:
+        MAFIATWOPLAYER = role
+
+NUMBEREDPLAYERLIST = []
+COLOUREDPLAYERLIST = []
+PLAYERLIST = []
+ICPLAYER = ""
+
+if setup in ('A1', 'A2', 'A3', 'B1', 'B2', 'B3'):
+    MAFIAONECOLOUR = 'darkred'
+else:
+    MAFIAONECOLOUR = 'redorange'
+
+MAFIATWOCOLOUR = 'redorange'
+
+SAMPLEMAFIAPMS = ""
+SAMPLETOWNPMS = ""
+for role in ("mafia goon", "mafia rolecop", "mafia roleblocker"):
+    SAMPLEMAFIAPMS += readFile('roles', role)
+for role in ("vanilla townie", "town jailkeeper", "town cop", "town neapolitan", "town tracker", "town doctor"):
+    SAMPLETOWNPMS += readFile('roles', role)
+
+for i, player in enumerate(players):
+    NUMBEREDPLAYERLIST.append(f"{i+1}) {player}")
+    if player == MAFIAONEPLAYER:
+        COLOUREDPLAYERLIST.append(f"[color=MAFIAONECOLOUR]{i+1}) {player}, {roles[player]}[/color]")
+    elif player == MAFIATWOPLAYER:
+        COLOUREDPLAYERLIST.append(f"[color=MAFIATWOCOLOUR]{i+1}) {player}, {roles[player]}[/color]")
+    else:
+        COLOUREDPLAYERLIST.append(f"[color=CHARTREUSE]{i+1}) {player}[/color]")
+    if i == 8:
+        PLAYERLIST.append(player.replace(' (IC)', ''))
+        ICPLAYER = player
+    else:
+        PLAYERLIST.append(player.replace(' (SE)', ''))
 
 def makeOP(whichThread):
     print(f"Making {whichThread} thread")
@@ -142,6 +166,18 @@ def readFile(folder, file): #may need more replacements as more files added
         line = line.replace('ICTEXT', ICTEXT)
         line = line.replace('ICLINK', ICLINK)
         line = line.replace('ICTITLE', ICTITLE)
+        line = line.replace('MAFIAPICTURE', MAFIAPICTURE)
+        line = line.replace('MAFIATEXT', MAFIATEXT)
+        line = line.replace('MAFIALINK', MAFIALINK)
+        line = line.replace('MAFIATITLE', MAFIATITLE)
+        line = line.replace('MAFIAONEROLE', setups[setup][0])
+        line = line.replace('MAFIATWOROLE', setups[setup][1])
+        line = line.replace('MAFIAONEPLAYER', MAFIAONEPLAYER)
+        line = line.replace('MAFIATWOPLAYER', MAFIATWOPLAYER)
+        line = line.replace('MAFIAONECOLOUR', MAFIAONECOLOUR)
+        line = line.replace('MAFIATWOCOLOUR', MAFIATWOCOLOUR)
+        line = line.replace('SAMPLETOWNPMS', SAMPLETOWNPMS)
+        line = line.replace('SAMPLEMAFIAPMS', SAMPLEMAFIAPMS)
     return post
 
 def sendRolePM(recipient, role):
@@ -236,12 +272,22 @@ def gameEvents():
         event = event + f"[area=day {n+1}][list][*]___ is lynched with _ scum on ___ wagon.[/list][/area]\n\n"
     return event, '\n\n'.join(reminders)
 
+def lockThread():
+    pass
+
+def updateThread():
+    pass
+
 DESCRIPTION = makeGameDescription()
 PUBLICTHREAD = makeOP("public")
 
 EVENTS, NIGHTACTIONREMINDERS = gameEvents()
 YOUTUBE = input("Type a youtube video for day 1 lynch: ")
 MODTHREAD = makeOP("mod")
+
+DEADLINE = datetime.datetime.now() + datetime.timedelta(days=2, minutes=15)
+DEADLINE = DEADLINE - datetime.timedelta(minutes=DEADLINE.minute % 15, seconds=DEADLINE.second, microseconds=DEADLINE.microsecond)
+DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
 
 #TODO finish making mafia thread template
 MAFIAPICTURE = input("Picture for MAFIA thread: ")
@@ -264,5 +310,5 @@ DEADTHREAD = makeOP("dead")
 
 #TODO: set these variables: LINK, TITLE, EXPLANATION, DESCRIPTION]
 
-for player, role in roles: 
-    sendRolePM(player, role)
+for player in players:
+    sendRolePM(player, roles[player]) 
