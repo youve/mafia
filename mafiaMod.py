@@ -15,119 +15,35 @@ from selenium.webdriver.support import expected_conditions as EC
 logging.basicConfig(filename='log-mafiaMod.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.debug("Start of program.")
 
-#TODO: set these variables: PUBLICTHREAD, MAFIATHREAD, MODTHREAD, DEADTHREAD, ICTHREAD, GAMENUMBER, GAMETITLE, NUMBEREDPLAYERLIST, PLAYERLIST, LINK, TITLE, EXPLANATION, DESCRIPTION]
-
-setups = {
-    'A1' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town neapolitan'] + ['vanilla townie'] * 5,
-    'A2' : ['mafia roleblocker', 'mafia goon', 'town jailkeeper', 'town doctor'] + ['vanilla townie'] * 5,
-    'A3' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town doctor'] + ['vanilla townie'] * 5,
-    'B1' : ['mafia rolecop', 'mafia goon', 'town cop', 'town tracker'] + ['vanilla townie'] * 5,
-    'B2' : ['mafia rolecop', 'mafia goon', 'town jailkeeper', 'town tracker'] + ['vanilla townie'] * 5,
-    'B3' : ['mafia rolecop', 'mafia goon', 'town neapolitan', 'town doctor'] + ['vanilla townie'] * 5,
-    'C1' : ['mafia goon', 'mafia goon', 'town cop'] + ['vanilla townie'] * 6,
-    'C2' : ['mafia goon', 'mafia goon', 'town jailkeeper'] + ['vanilla townie'] * 6,
-    'C3' : ['mafia goon', 'mafia goon', 'town tracker', 'town doctor'] + ['vanilla townie'] * 5,
-}
-
-parser = argparse.ArgumentParser(description='Setup a newbie game.')
-parser.add_argument('setup', metavar='setup', type=str, choices=setups.keys(),
-                    help='Have the playerlist copied and ready to go.')
-parser.add_argument('number', metavar='gamenumber', type=int, help="Game number")
-parser.add_argument('title', metavar="gametitle", type=str, help="Name of the theme")
-parser.add_argument('-u', '--username' metavar="username", type=str, help="Moderator's username", default="Plotinus", nargs="?")
-parser.add_argument('totalPlayers', metavar="totalPlayers", type=int, help="How many players", nargs='?', default=9)
-
-args = parser.parse_args()
-#args = parser.parse_args(['A1', '1900', 'Popcorn'])
-logging.info(f"args: {args}")
-
-players = []
-if not args.number:
-    args.number = input("Enter your game number: ")
-if not args.title:
-    args.title = input("Enter your game title: ")
-
-try: #try to get playerlist from clipboard
-    import pyperclip
-    players = list(pyperclip.paste().split('\n'))
-except ModuleNotFoundError:
-    print('pyperclip module not found. Get it from https://pypi.org but you can use ctrl-v to paste. ')
-
-if len(players) != args.totalPlayers:
-    logging.debug(f"{len(players)} is not enough players: {', '.join(players)}")
-    players = []
-    print("Paste the players here, then hit enter: ")
-
-while len(players) < args.totalPlayers:
-    players.append(sys.stdin.readline().strip())
-
-logging.debug(f"Playerlist: {', '.join(players)}")
-
-shuffledPlayers = players[:]
-random.shuffle(shuffledPlayers)
-
-#assign roles
-roles = dict(zip(shuffledPlayers,setups[setup]))
-
-for i, role in enumerate(roles):
-    print(role, ':', roles[role]) 
-    if i == 0:
-        MAFIAONEPLAYER = role
-    elif i == 1:
-        MAFIATWOPLAYER = role
-
-NUMBEREDPLAYERLIST = []
-COLOUREDPLAYERLIST = []
-PLAYERLIST = []
-ICPLAYER = ""
-
-if setup in ('A1', 'A2', 'A3', 'B1', 'B2', 'B3'):
-    MAFIAONECOLOUR = 'darkred'
-else:
-    MAFIAONECOLOUR = 'redorange'
-
-MAFIATWOCOLOUR = 'redorange'
-
-SAMPLEMAFIAPMS = ""
-SAMPLETOWNPMS = ""
-for role in ("mafia goon", "mafia rolecop", "mafia roleblocker"):
-    SAMPLEMAFIAPMS += readFile('roles', role)
-for role in ("vanilla townie", "town jailkeeper", "town cop", "town neapolitan", "town tracker", "town doctor"):
-    SAMPLETOWNPMS += readFile('roles', role)
-
-for i, player in enumerate(players):
-    NUMBEREDPLAYERLIST.append(f"{i+1}) {player}")
-    if player == MAFIAONEPLAYER:
-        COLOUREDPLAYERLIST.append(f"[color=MAFIAONECOLOUR]{i+1}) {player}, {roles[player]}[/color]")
-    elif player == MAFIATWOPLAYER:
-        COLOUREDPLAYERLIST.append(f"[color=MAFIATWOCOLOUR]{i+1}) {player}, {roles[player]}[/color]")
+def login(browser, expectedTitle):
+    '''Log back in if unexpectedly logged out. Returns browser object '''
+    print('\nLogging in.\n')
+    browser.get('https://forum.mafiascum.net/ucp.php?mode=login')
+    elem = browser.find_element_by_name("username")
+    elem.clear()
+    if args.username:
+        elem.send_keys(args.username)
     else:
-        COLOUREDPLAYERLIST.append(f"[color=CHARTREUSE]{i+1}) {player}[/color]")
-    if i == 8:
-        PLAYERLIST.append(player.replace(' (IC)', ''))
-        ICPLAYER = player
-    else:
-        PLAYERLIST.append(player.replace(' (SE)', ''))
+        input("Type your username in the browser and then hit return here when you're done.")
+    elem = browser.find_element_by_name('autologin')
+    elem.click()
+    elem = browser.find_element_by_name('viewonline')
+    elem.click()
+    elem = browser.find_element_by_name("password")
+    elem.clear()
+    input("Type your password in the browser and then hit return here when you're done")
+    elem = WebDriverWait(browser, 10).until(EC.title_contains(expectedTitle))
+    return browser
 
-def makeOP(whichThread):
+def makeOP(browser, whichThread):
+    '''Create the first post in a thread. Returns the URL of the thread that it makes.'''
     print(f"Making {whichThread} thread")
-    browser = webdriver.Firefox()
     if whichThread == 'public':
         browser.get('https://forum.mafiascum.net/posting.php?mode=post&f=11')
     else:
         browser.get('https://forum.mafiascum.net/posting.php?mode=post&f=90')
-    if "Login" in browser.title:
-        elem = browser.find_element_by_name("username")
-        elem.clear()
-        elem.send_keys(args.username)
-        elem = browser.find_element_by_name('autologin')
-        elem.click()
-        elem = browser.find_element_by_name('viewonline')
-        elem.click()
-        elem = browser.find_element_by_name("password")
-        elem.clear()
-        input("Type your password in the browser and then hit return here when you're done")
-    element = WebDriverWait(browser, 10).until(EC.title_contains('new topic'))
+    if 'icon-register' in browser.page_source:
+        browser = login(browser, 'new topic')    
     elem = browser.find_element_by_name("subject")
     elem.clear()
     elem.send_keys(f"Newbie {args.number} | {args.title.title()} | {whichPT.title()}")
@@ -138,7 +54,19 @@ def makeOP(whichThread):
         elem.send_keys(line)
     return browser.current_url
 
+def listFiles(folder):
+    '''return a list of all filenames in a directory'''
+    abspath = os.path.abspath(__file__)
+    fileDirectory = os.path.dirname(abspath) + '/files/' + folder + '/'
+    files = os.listdir(fileDirectory)
+    files.sort()
+    print(f'\nFound {len(files)} files in {folder}: {", ".join(files)}')
+    return files
+
 def readFile(folder, file): #may need more replacements as more files added
+    '''Load a file from a directory, fill in the placeholders with real data, 
+    then return a list of the file's lines'''
+    print(f'\nLoading ./files/{folder}/{file}\n')
     abspath = os.path.abspath(__file__)
     fileDirectory = os.path.dirname(abspath) + '/files/' + folder + '/'
     with open(folder + file, 'r') as f:
@@ -154,6 +82,7 @@ def readFile(folder, file): #may need more replacements as more files added
         line = line.replace('DESCRIPTION', DESCRIPTION)
         line = line.replace('NUMBEREDPLAYERLIST', NUMBEREDPLAYERLIST.join('\n'))
         line = line.replace('PLAYERLIST', PLAYERLIST.join('\n'))
+        line = line.replace('COLOUREDPLAYERLIST', COLOUREDPLAYERLIST.join('\n'))
         line = line.replace('ROLES', pprint.pformat(roles))
         line = line.replace('EVENTS', EVENTS)
         line = line.replace('YOUTUBE', YOUTUBE)
@@ -180,8 +109,11 @@ def readFile(folder, file): #may need more replacements as more files added
         line = line.replace('SAMPLEMAFIAPMS', SAMPLEMAFIAPMS)
     return post
 
-def sendRolePM(recipient, role):
-    print(f"Sending {recipient} their role")
+def sendRolePM(browser, recipient, role):
+    '''Send a role PM to a player'''
+    print(f"\nSending {recipient} their role PM: {role}\n")
+    if 'icon-register' in browser.page_source:
+        browser = login(browser, 'Compose message')    
     browser.get('https://forum.mafiascum.net/ucp.php?i=pm&mode=compose')
     elem = browser.find_element_by_name("username_list")
     elem.clear()
@@ -198,9 +130,11 @@ def sendRolePM(recipient, role):
         elem.send_keys(line) 
     elem.submit()
     elem = browser.find_element_by_name("post")
-    elem.submit()
+    elem.click()
 
 def makeGameDescription():
+    '''Create and return the description that goes at the start of the public game'''
+    print('\nMaking game description\n')
     DOINGWHAT = ''
     if "stuff i found online" in args.title.lower():
         DOINGWHAT = "showcasing cool stuff I found/learned about online via my RSS reader and maybe talking some about why I think it's cool. "
@@ -221,10 +155,11 @@ def makeGameDescription():
         \n
         Hello. In this game I'll be  {DOINGWHAT}
         Such as [url={LINK}]{TITLE}[/url]. {EXPLANATION}"""
-
     return DESCRIPTION
 
 def gameEvents():
+    '''Create a list of what happened during the game for posting in the mod PT'''
+    print('\nCreating game events\n')
     event = "[area=day 1][list][*]___ is lynched with _ scum on ___ wagon.[/list][/area]\n\n"
     townActions = []
     mafiaActions = ['[*][color=red]___[/color] is killing [color=green]___[/color].\n']
@@ -263,52 +198,185 @@ def gameEvents():
                             [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to kill tonight, if anybody.[/code]''')
     for n in range(1,3):
         event = event + f"[area=night {n}][list]"
-            for action in townActions:
-                event = event + action
-            for action in mafiaActions:
-                event = event + action
+        for action in townActions:
+            event = event + action
+        for action in mafiaActions:
+            event = event + action
         event = event + '[/list][/area]\n\n'
-
         event = event + f"[area=day {n+1}][list][*]___ is lynched with _ scum on ___ wagon.[/list][/area]\n\n"
     return event, '\n\n'.join(reminders)
 
-def lockThread():
-    pass
+def lockThread(browser, whichThread):
+    '''Lock a game thread so only the moderator can post in it.'''
+    print(f'\nLocking {whichThread}\n')
+    browser.get(whichThread)
+    if 'icon-register' in browser.page_source:
+        browser = login(browser, f'Newbie {args.number}')
+    lock = browser.find_element_by_xpath("//select[@id='quick-mod-select']")
+    lock.submit()
+    elem = WebDriverWait(browser, 10).until(EC.title_contains('Lock topic'))
+    yes = browser.find_element_by_name('confirm')
+    yes.click()
 
-def updateThread():
-    pass
+def updateThread(browser, whichThread, post):
+    '''Add posts to an existing thread.'''
+    print(f'\nUpdating {whichThread}\n')
+    if 'icon-register' in browser.page_source:
+        login(browser, f'Newbie {args.number}')
+    button = browser.find_element_by_class_name('buttons')
+    button.click()
+    elem = WebDriverWait(browser, 10).until(EC.title_contains('Post a reply'))
+    textbox = browser.find_element_by_name('message')
+    for line in post:
+        textbox.send_keys(line)
+    button = browser.find_element_by_name('post')
+    button.click()
 
+setups = {
+    'A1' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town neapolitan'] + ['vanilla townie'] * 5,
+    'A2' : ['mafia roleblocker', 'mafia goon', 'town jailkeeper', 'town doctor'] + ['vanilla townie'] * 5,
+    'A3' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town doctor'] + ['vanilla townie'] * 5,
+    'B1' : ['mafia rolecop', 'mafia goon', 'town cop', 'town tracker'] + ['vanilla townie'] * 5,
+    'B2' : ['mafia rolecop', 'mafia goon', 'town jailkeeper', 'town tracker'] + ['vanilla townie'] * 5,
+    'B3' : ['mafia rolecop', 'mafia goon', 'town neapolitan', 'town doctor'] + ['vanilla townie'] * 5,
+    'C1' : ['mafia goon', 'mafia goon', 'town cop'] + ['vanilla townie'] * 6,
+    'C2' : ['mafia goon', 'mafia goon', 'town jailkeeper'] + ['vanilla townie'] * 6,
+    'C3' : ['mafia goon', 'mafia goon', 'town tracker', 'town doctor'] + ['vanilla townie'] * 5,
+}
+
+#args
+parser = argparse.ArgumentParser(description='Setup a newbie game.')
+parser.add_argument('setup', metavar='setup', type=str, choices=setups.keys(),
+                    help='Have the playerlist copied and ready to go.')
+parser.add_argument('number', metavar='gamenumber', type=int, help="Game number")
+parser.add_argument('title', metavar="gametitle", type=str, help="Name of the theme")
+parser.add_argument('-u', '--username', metavar="username", type=str, help="Moderator's username")
+parser.add_argument('totalPlayers', metavar="totalPlayers", type=int, help="How many players", nargs='?', default=9)
+
+args = parser.parse_args()
+#args = parser.parse_args(['A1', '1900', 'Popcorn'])
+logging.info(f"args: {args}")
+
+if not args.number:
+    args.number = input("Enter your game number: ")
+if not args.title:
+    args.title = input("Enter your game title: ")
+
+# get playerlist
+players = []
+
+try: #try to get playerlist from clipboard
+    import pyperclip
+    players = list(pyperclip.paste().split('\n'))
+except ModuleNotFoundError:
+    print('pyperclip module not found. Get it from https://pypi.org but you can use ctrl-v to paste. ')
+
+if len(players) != args.totalPlayers:
+    logging.debug(f"{len(players)} is not enough players: {', '.join(players)}")
+    players = []
+    print("Paste the players here, then hit enter: ")
+
+while len(players) < args.totalPlayers:
+    players.append(sys.stdin.readline().strip())
+
+logging.debug(f"Playerlist: {', '.join(players)}")
+
+#shuffle playerlist
+shuffledPlayers = players[:]
+random.shuffle(shuffledPlayers)
+
+#assign roles
+roles = dict(zip(shuffledPlayers,setups[setup]))
+
+for i, role in enumerate(roles):
+    print(role, ':', roles[role]) 
+    if i == 0:
+        MAFIAONEPLAYER = role
+    elif i == 1:
+        MAFIATWOPLAYER = role
+
+# initialise playerlist related variables
+NUMBEREDPLAYERLIST = []
+COLOUREDPLAYERLIST = []
+PLAYERLIST = []
+ICPLAYER = ""
+
+if setup in ('A1', 'A2', 'A3', 'B1', 'B2', 'B3'):
+    MAFIAONECOLOUR = 'darkred'
+else:
+    MAFIAONECOLOUR = 'redorange'
+
+MAFIATWOCOLOUR = 'redorange'
+
+#create sample role PMs for public thread and mafia private thread
+SAMPLEMAFIAPMS = ""
+SAMPLETOWNPMS = ""
+for role in ("mafia goon", "mafia rolecop", "mafia roleblocker"):
+    SAMPLEMAFIAPMS += readFile('roles', role)
+for role in ("vanilla townie", "town jailkeeper", "town cop", "town neapolitan", "town tracker", "town doctor"):
+    SAMPLETOWNPMS += readFile('roles', role)
+
+#create variously formatted playerlist variables to be posted in various threads
+for i, player in enumerate(players):
+    NUMBEREDPLAYERLIST.append(f"{i+1}) {player}")
+    if player == MAFIAONEPLAYER:
+        COLOUREDPLAYERLIST.append(f"[color=MAFIAONECOLOUR]{i+1}) {player}, {roles[player]}[/color]")
+    elif player == MAFIATWOPLAYER:
+        COLOUREDPLAYERLIST.append(f"[color=MAFIATWOCOLOUR]{i+1}) {player}, {roles[player]}[/color]")
+    else:
+        COLOUREDPLAYERLIST.append(f"[color=CHARTREUSE]{i+1}) {player}[/color]")
+    if i == 8:
+        PLAYERLIST.append(player.replace(' (IC)', ''))
+        ICPLAYER = player
+    else:
+        PLAYERLIST.append(player.replace(' (SE)', ''))
+
+browser = webdriver.Firefox()
+
+# fill in any variables we need then make the public thread:
 DESCRIPTION = makeGameDescription()
-PUBLICTHREAD = makeOP("public")
+PUBLICTHREAD = makeOP(browser, "public")
+lockThread(PUBLICTHREAD)
 
+# fill in a few last variables and make the mod thread
 EVENTS, NIGHTACTIONREMINDERS = gameEvents()
 YOUTUBE = input("Type a youtube video for day 1 lynch: ")
-MODTHREAD = makeOP("mod")
+MODTHREAD = makeOP(browser, "mod")
 
+# fill in a few last variables and make the mafia thread
 DEADLINE = datetime.datetime.now() + datetime.timedelta(days=2, minutes=15)
 DEADLINE = DEADLINE - datetime.timedelta(minutes=DEADLINE.minute % 15, seconds=DEADLINE.second, microseconds=DEADLINE.microsecond)
 DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
 
-#TODO finish making mafia thread template
 MAFIAPICTURE = input("Picture for MAFIA thread: ")
 MAFIATEXT = input("Text for MAFIA thread: ")
 MAFIALINK = input("Link for MAFIA thread: ")
 MAFIATITLE = input("Title for MAFIA thread link: ")
-MAFIATHREAD = makeOP("mafia")
+MAFIATHREAD = makeOP(browser, "mafia")
 
+# fill in a few last variables and make the IC thread
 ICPICTURE = input("Picture for IC thread: ")
 ICTEXT = input("Text for IC thread: ")
 ICLINK = input("Link for IC thread: ")
 ICTITLE = input("Title for IC thread link: ")
-ICTHREAD = makeOP("ic")
+ICTHREAD = makeOP(browser, "ic")
 
+# fill in a few last variables and make the dead thread
 DEADPICTURE = input("Picture for dead thread: ")
 DEADTEXT = input("Text for dead thread: ")
 DEADLINK = input("Link for dead thread: ")
 DEADTITLE = input("Title for dead thread link: ")
-DEADTHREAD = makeOP("dead")
+DEADTHREAD = makeOP(browser, "dead")
 
-#TODO: set these variables: LINK, TITLE, EXPLANATION, DESCRIPTION]
+publicFiles = listFiles('public')
+for file in range(1,len(publicFiles)):
+    updateThread(browser, PUBLICTHREAD, readFile(file))
 
+modFiles = listFiles('mod')
+for file in range(1,len(modFiles)):
+    updateThread(browser, MODTHREAD, readFile(file))
+
+#send out role PMs
 for player in players:
     sendRolePM(player, roles[player]) 
+
