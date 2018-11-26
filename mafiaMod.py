@@ -346,6 +346,7 @@ MODTHREAD = makeOP(browser, "mod")
 # fill in a few last variables and make the mafia thread
 DEADLINE = datetime.datetime.now() + datetime.timedelta(days=2, minutes=15)
 DEADLINE = DEADLINE - datetime.timedelta(minutes=DEADLINE.minute % 15, seconds=DEADLINE.second, microseconds=DEADLINE.microsecond)
+print(f'{datetime.datetime.strftime(DEADLINE, "%Y %j %H:%M:%S")} day 1 starts'))
 DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
 
 MAFIAPICTURE = input("Picture for MAFIA thread: ")

@@ -6,7 +6,7 @@ Modding mafia games online is fun but comes with some tedious administrative asp
 
 ## mafiaMod.py
 
-`mafiaMod.py` randomises the playerlist and then uses Selenium to sets up the game threads, send out role PMs. It is almost complete and can handle most of the pregame process for a [newbie game](https://forum.mafiascum.net/viewtopic.php?f=4) at this time.
+`mafiaMod.py` randomises the playerlist. Then it uses Selenium to sets up the game threads and send out role PMs. It is almost complete and can handle all of the pregame process for a [newbie game](https://forum.mafiascum.net/viewtopic.php?f=4) at this time. I will finish testing it when I next have a game to setup.
 
 ## mafiaDeadlines.py
 
