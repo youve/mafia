@@ -9,7 +9,7 @@ import re
 
 parser = argparse.ArgumentParser(description='Deadline sizes')
 parser.add_argument('start', metavar='start', type=str, default=datetime.datetime.now(),
-                    help='%Y %j %H:%M')
+                    help='Y j H:M')
 parser.add_argument('length', metavar='length', type=int, nargs='?', default=10,
                     help='length of the dayphase')
 parser.add_argument('emoji', metavar='emoji', type=str, help="emoji", nargs='?', default='🌐')
