@@ -8,6 +8,10 @@ Modding mafia games online is fun but comes with some tedious administrative asp
 
 `mafiaMod.py` randomises the playerlist. Then it uses Selenium to sets up the game threads and send out role PMs. It is almost complete and can handle all of the pregame process for a [newbie game](https://forum.mafiascum.net/viewtopic.php?f=4) at this time. I will finish testing it when I next have a game to setup.
 
+## mafiaProd.py
+
+If players are inactive, they should be prodded after a number of hours and then replaced if they still don't respond. Since many people don't have time to play on the weekends, it's good for the timer to run at halfspeed. mafiaProd.py takes a date and adds a default of 36 hours to it, giving more time on weekends. Handles different rules for players on a leave of absence as well.
+
 ## mafiaDeadlines.py
 
 `mafiaDeadlines.py` is a program that works in conjunction with [schedule.py](https://github.com/youve/schedule/blob/master/schedule.py), producing output in a format that [main](https://github.com/youve/schedule/blob/master/files/main) can understand.
