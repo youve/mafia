@@ -25,7 +25,7 @@ nudge = False
 frequency = args.frequency*60*60
 if args.vla: # if player is on a leave of absence they get nudged slower but they don't get 
     #slower weekends
-    nudge = prod + datetime.timedelta(hours=args.frequency*2)
+    nudge = prod + datetime.timedelta(hours=args.frequency*1.5)
 else:
     nudge = datetime.datetime(1,1,1) # prod will never be bigger than this
     while prod.weekday() < 5 and frequency >= 1: # weekday
