@@ -24,16 +24,16 @@ def login(browser, url):
     '''Log back in if unexpectedly logged out. Returns browser object '''
     print('\nLogging in.\n')
     browser.get('https://forum.mafiascum.net/ucp.php?mode=login')
+    elem = browser.find_element_by_name('autologin')
+    elem.click()
+    elem = browser.find_element_by_name('viewonline')
+    elem.click()
     elem = browser.find_element_by_name("username")
     elem.clear()
     if args.username:
         elem.send_keys(args.username)
     else:
         input("Type your username in the browser and then hit return here when you're done.")
-    elem = browser.find_element_by_name('autologin')
-    elem.click()
-    elem = browser.find_element_by_name('viewonline')
-    elem.click()
     elem = browser.find_element_by_name("password")
     elem.clear()
     input("Type your password in the browser and then hit return here when you're done")
