@@ -8,6 +8,7 @@ import os
 import sys
 import random
 import pprint
+import readline
 import datetime
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys    
@@ -17,7 +18,7 @@ import re
 
 #TODO: bookmark threads, prepare PM to listmod
 
-logging.basicConfig(filename='log-mafiaMod.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.debug("Start of program.")
 
 def login(browser, url):
@@ -107,7 +108,7 @@ def preparePost(post):
         'DEADTITLE', 'ICPLAYER', 'ICPICTURE', 'ICLINK', 'ICTEXT', 'ICTITLE', 'MAFIAPICTURE', 
         'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE', 'MAFIAONEROLE', 'MAFIATWOROLE', 'MAFIAONEPLAYER', 
         'MAFIATWOPLAYER', 'MAFIAONECOLOUR', 'MAFIATWOCOLOUR', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
-        'NIGHTACTIONREMINDERS'):
+        'NIGHTACTIONREMINDERS, DEADLINE'):
         if re.search(placeholder, post):
             logging.debug(f'found {placeholder} ')
             #this doesn't work:
@@ -221,7 +222,7 @@ def lockThread(browser, whichThread):
     browser.get(whichThread)
     if 'icon-register' in browser.page_source:
         login(browser, whichThread)
-    lock = browser.find_element_by_xpath("//select[@id='quick-mod-select']")
+    lock = browser.find_element_by_id("quick-mod-select")
     lock.submit()
     elem = WebDriverWait(browser, 10).until(EC.title_contains('Lock topic'))
     yes = browser.find_element_by_name('confirm')
@@ -238,6 +239,7 @@ def updateThread(browser, whichThread, post):
     elem = WebDriverWait(browser, 10).until(EC.title_contains('Post a reply'))
     textbox = browser.find_element_by_name('message')
     textbox.send_keys(post)
+    browser.implicitly_wait(10)
     button = browser.find_element_by_name('post')
     button.click()
 
@@ -299,6 +301,7 @@ random.shuffle(shuffledPlayers)
 
 #assign roles
 roles = dict(zip(shuffledPlayers,setups[args.setup]))
+
 ROLES = pprint.pformat(roles)
 
 for i, role in enumerate(roles):
@@ -359,7 +362,7 @@ DEADLINE = datetime.datetime.now() + datetime.timedelta(days=2, minutes=15)
 DEADLINE = DEADLINE - datetime.timedelta(minutes=DEADLINE.minute % 15, seconds=DEADLINE.second, microseconds=DEADLINE.microsecond)
 print(f'{datetime.datetime.strftime(DEADLINE, "%Y %j %H:%M:%S")} day 1 starts')
 DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
-print(DEADLINE)
+print(f'[countdown]{DEADLINE}[/countdown]')
 
 #create sample role PMs for public thread and mafia private thread
 MAFIATHREAD = '' # can't have the mafia link in these
@@ -398,8 +401,9 @@ for file in range(1,len(modFiles)):
     updateThread(browser, MODTHREAD, readFile('mod', str(file)))
 
 #send out role PMs
-for player in PLAYERLIST:
-    sendRolePM(browser, player, roles[player]) 
+for i, player in enumerate(players):
+    logging.debug(f'player: {player}, roles: {roles}')
+    sendRolePM(browser, PLAYERLIST.split('\n')[i], roles[player]) 
 
 publicFiles = listFiles('public')
 for file in range(1,len(publicFiles)):
