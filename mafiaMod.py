@@ -16,7 +16,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
 
-#TODO: bookmark threads, prepare PM to listmod
+#TODO: prepare PM to listmod
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.debug("Start of program.")
@@ -77,7 +77,10 @@ def makeOP(browser, whichThread, users=None, mods=None):
             browser.implicitly_wait(10)
     button = browser.find_element_by_name('post')
     button.click()
-    return browser.current_url
+    threadUrl = browser.current_url
+    elem = browser.find_element_by_link_text('Bookmark topic')
+    elem.click()
+    return threadUrl
 
 def listFiles(folder):
     '''return a list of all filenames in a directory'''
