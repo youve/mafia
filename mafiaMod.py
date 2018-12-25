@@ -78,7 +78,7 @@ def makeOP(browser, whichThread, users=None, mods=None):
     button = browser.find_element_by_name('post')
     button.click()
     threadUrl = browser.current_url
-    elem = browser.find_element_by_link_text('Bookmark topic')
+    elem = browser.find_element_by_partial_link_text('Bookmark topic')
     elem.click()
     return threadUrl
 
@@ -111,7 +111,7 @@ def preparePost(post):
         'DEADTITLE', 'ICPLAYER', 'ICPICTURE', 'ICLINK', 'ICTEXT', 'ICTITLE', 'MAFIAPICTURE', 
         'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE', 'MAFIAONEROLE', 'MAFIATWOROLE', 'MAFIAONEPLAYER', 
         'MAFIATWOPLAYER', 'MAFIAONECOLOUR', 'MAFIATWOCOLOUR', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
-        'NIGHTACTIONREMINDERS, DEADLINE'):
+        'NIGHTACTIONREMINDERS', 'DEADLINE'):
         if re.search(placeholder, post):
             logging.debug(f'found {placeholder} ')
             #this doesn't work:
@@ -141,9 +141,9 @@ def sendRolePM(browser, recipient, role):
         elem.send_keys(f"Hi {recipient}! Thanks so much for ICing. I've made you an [url={ICTHREAD}]IC Thread here[/url]. Have fun!\n\n")
     post = readFile('roles', role)
     elem.send_keys(post) 
+    input('Everything okay?')
     elem = browser.find_element_by_name("post")
     elem.click()
-    input('Everything okay?')
 
 def makeGameDescription():
     '''Create and return the description that goes at the start of the public game'''
@@ -242,7 +242,7 @@ def updateThread(browser, whichThread, post):
     elem = WebDriverWait(browser, 10).until(EC.title_contains('Post a reply'))
     textbox = browser.find_element_by_name('message')
     textbox.send_keys(post)
-    browser.implicitly_wait(10)
+    browser.implicitly_wait(20)
     button = browser.find_element_by_name('post')
     button.click()
 
@@ -307,13 +307,16 @@ roles = dict(zip(shuffledPlayers,setups[args.setup]))
 
 ROLES = pprint.pformat(roles)
 
+
 for i, role in enumerate(roles):
     print(role, ':', roles[role]) 
     if i == 0:
-        MAFIAONEPLAYER = role
+        MAFIAONEPLAYER = role.replace(' (IC)', '')
+        MAFIAONEPLAYER = MAFIAONEPLAYER.replace(' (SE)', '')
         MAFIAONEROLE = roles[role]
     elif i == 1:
-        MAFIATWOPLAYER = role
+        MAFIATWOPLAYER = role.replace(' (IC)', '')
+        MAFIATWOPLAYER = MAFIATWOPLAYER.replace(' (SE)', '')
         MAFIATWOROLE = roles[role]
 
 # initialise playerlist related variables
