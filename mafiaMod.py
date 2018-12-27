@@ -175,7 +175,7 @@ def gameEvents():
     print('\nCreating game events\n')
     event = "[area=day 1][list][*]___ is lynched with _ scum on ___ wagon.[/list][/area]\n\n"
     townActions = []
-    mafiaActions = ['[*][color=red]___[/color] is killing [color=green]___[/color].\n']
+    mafiaActions = ['[*][color=purple]___[/color] is killing [color=green]___[/color].\n']
     reminders = []
     for k, v in roles.items():
         if v == 'town cop':
@@ -199,11 +199,11 @@ def gameEvents():
             reminders.append('''Tracker didn't submit your night actions:
                             [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to track tonight, if anybody.[/code]''')
         elif v == 'mafia roleblocker':
-            mafiaActions.append(f'[*][color=#400]{k}[/color] is roleblocking [color=green]___[/color].\n')
+            mafiaActions.append(f'[*][color=indigo]{k}[/color] is roleblocking [color=green]___[/color].\n')
             reminders.append('''Roleblocker didn't submit your night actions:
                             [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to kill and/or roleblock tonight, if anybody.[/code]''')
         elif v == 'mafia rolecop':
-            mafiaActions.append(f'[*][color=#400]{k}[/color] is rolecopping [color=green]___[/color].\n')
+            mafiaActions.append(f'[*][color=indigo]{k}[/color] is rolecopping [color=green]___[/color].\n')
             reminders.append('''Rolecop didn't submit your night actions:
                             [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to kill and/or rolecop tonight, if anybody.[/code]''')
         elif v == 'mafia goon' and 'mafia roleblocker' not in roles.values() and 'mafia rolecop' not in roles.values():
@@ -326,11 +326,11 @@ PLAYERLIST = []
 ICPLAYER = ""
 
 if args.setup in ('A1', 'A2', 'A3', 'B1', 'B2', 'B3'):
-    MAFIAONECOLOUR = 'darkred'
+    MAFIAONECOLOUR = 'indigo'
 else:
-    MAFIAONECOLOUR = 'orangered'
+    MAFIAONECOLOUR = 'purple'
 
-MAFIATWOCOLOUR = 'orangered'
+MAFIATWOCOLOUR = 'purple'
 
 #create variously formatted playerlist variables to be posted in various threads
 for i, player in enumerate(players):
@@ -340,7 +340,7 @@ for i, player in enumerate(players):
     elif player == MAFIATWOPLAYER:
         COLOUREDPLAYERLIST.append(f"[color=MAFIATWOCOLOUR]{i+1}) {player}, {roles[player]}[/color]")
     else:
-        COLOUREDPLAYERLIST.append(f"[color=AQUAMARINE]{i+1}) {player}[/color]")
+        COLOUREDPLAYERLIST.append(f"[color=green]{i+1}) {player}[/color]")
     if i == 8:
         ICPLAYER = player.replace(' (IC)', '')
         PLAYERLIST.append(ICPLAYER)
