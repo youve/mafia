@@ -15,6 +15,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
+import time
 
 #TODO: prepare PM to listmod
 
@@ -77,6 +78,7 @@ def makeOP(browser, whichThread, users=None, mods=None):
             browser.implicitly_wait(10)
     button = browser.find_element_by_name('post')
     button.click()
+    browser.implicitly_wait(20)
     threadUrl = browser.current_url
     elem = browser.find_element_by_partial_link_text('Bookmark topic')
     elem.click()
@@ -279,7 +281,6 @@ if not args.title:
 
 GAMENUMBER = str(args.number)
 GAMETITLE = args.title
-# get playerlist
 players = []
 
 try: #try to get playerlist from clipboard
@@ -296,13 +297,11 @@ if len(players) != args.totalPlayers:
 while len(players) < args.totalPlayers:
     players.append(sys.stdin.readline().strip())
 
-logging.debug(f"Playerlist: {', '.join(players)}")
+ logging.debug(f"Playerlist: {', '.join(players)}")
 
-#shuffle playerlist
 shuffledPlayers = players[:]
 random.shuffle(shuffledPlayers)
 
-#assign roles
 roles = dict(zip(shuffledPlayers,setups[args.setup]))
 
 ROLES = pprint.pformat(roles)
@@ -393,6 +392,7 @@ ICLINK = input("Link for IC thread: ")
 ICTITLE = input("Title for IC thread link: ")
 ICTHREAD = makeOP(browser, "ic", mods=[ICPLAYER, args.listmod])
 
+
 # fill in a few last variables and make the dead thread
 DEADPICTURE = input("Picture for dead thread: ")
 DEADTEXT = input("Text for dead thread: ")
@@ -405,12 +405,15 @@ YOUTUBE = YOUTUBE.replace('https://www.youtube.com/watch?v=', '')
 modFiles = listFiles('mod')
 for file in range(1,len(modFiles)):
     updateThread(browser, MODTHREAD, readFile('mod', str(file)))
+    time.sleep(5)
 
 #send out role PMs
 for i, player in enumerate(players):
     logging.debug(f'player: {player}, roles: {roles}')
     sendRolePM(browser, PLAYERLIST.split('\n')[i], roles[player]) 
+    time.sleep(5)
 
 publicFiles = listFiles('public')
 for file in range(1,len(publicFiles)):
     updateThread(browser, PUBLICTHREAD, readFile('public', str(file)))
+    time.sleep(5)
