@@ -107,13 +107,15 @@ def readFile(folder, file):
 
 def preparePost(post):
     '''fill in the placeholders with real data'''
-    for placeholder in ('GAMENUMBER', 'GAMETITLE', 'MAFIATHREAD', 'PUBLICTHREAD', 'ICTHREAD',
-        'DEADTHREAD', 'MODTHREAD', 'DESCRIPTION', 'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 
-        'PLAYERLIST', 'ROLES', 'EVENTS', 'YOUTUBE', 'DEADPICTURE', 'DEADTEXT', 'DEADLINK', 
-        'DEADTITLE', 'ICPLAYER', 'ICPICTURE', 'ICLINK', 'ICTEXT', 'ICTITLE', 'MAFIAPICTURE', 
-        'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE', 'MAFIAONEROLE', 'MAFIATWOROLE', 'MAFIAONEPLAYER', 
-        'MAFIATWOPLAYER', 'MAFIAONECOLOUR', 'MAFIATWOCOLOUR', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
-        'NIGHTACTIONREMINDERS', 'DEADLINE'):
+    for placeholder in ('GAMENUMBER', 'GAMETITLE', 'MAFIATHREAD', 
+            'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD', 
+            'DESCRIPTION', 'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 
+            'PLAYERLIST', 'ROLES', 'EVENTS', 'YOUTUBE', 'DEADPICTURE', 
+            'DEADTEXT', 'DEADLINK', 'DEADTITLE', 'MAFIAPICTURE', 
+            'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE', 'MAFIAONEROLE', 
+            'MAFIATWOROLE', 'MAFIAONEPLAYER', 'MAFIATWOPLAYER', 
+            'MAFIAONECOLOUR', 'MAFIATWOCOLOUR', 'SAMPLETOWNPMS', 
+            'SAMPLEMAFIAPMS', 'NIGHTACTIONREMINDERS', 'DEADLINE'):
         if re.search(placeholder, post):
             logging.debug(f'found {placeholder} ')
             #this doesn't work:
@@ -139,8 +141,6 @@ def sendRolePM(browser, recipient, role):
     elem.send_keys(f"Newbie {args.number} | {args.title.title()} | Role PM")
     elem = browser.find_element_by_name("message")
     elem.clear()
-    if recipient == ICPLAYER:
-        elem.send_keys(f"Hi {recipient}! Thanks so much for ICing. I've made you an [url={ICTHREAD}]IC Thread here[/url]. Have fun!\n\n")
     post = readFile('roles', role)
     elem.send_keys(post) 
     input('Everything okay?')
@@ -297,7 +297,7 @@ if len(players) != args.totalPlayers:
 while len(players) < args.totalPlayers:
     players.append(sys.stdin.readline().strip())
 
- logging.debug(f"Playerlist: {', '.join(players)}")
+logging.debug(f"Playerlist: {', '.join(players)}")
 
 shuffledPlayers = players[:]
 random.shuffle(shuffledPlayers)
@@ -322,7 +322,6 @@ for i, role in enumerate(roles):
 NUMBEREDPLAYERLIST = []
 COLOUREDPLAYERLIST = []
 PLAYERLIST = []
-ICPLAYER = ""
 
 if args.setup in ('A1', 'A2', 'A3', 'B1', 'B2', 'B3'):
     MAFIAONECOLOUR = 'indigo'
@@ -340,11 +339,7 @@ for i, player in enumerate(players):
         COLOUREDPLAYERLIST.append(f"[color=MAFIATWOCOLOUR]{i+1}) {player}, {roles[player]}[/color]")
     else:
         COLOUREDPLAYERLIST.append(f"[color=green]{i+1}) {player}[/color]")
-    if i == 8:
-        ICPLAYER = player.replace(' (IC)', '')
-        PLAYERLIST.append(ICPLAYER)
-    else:
-        PLAYERLIST.append(player.replace(' (SE)', ''))
+    PLAYERLIST.append(player.replace(' (SE)', ''))
 
 NUMBEREDPLAYERLIST = '\n'.join(NUMBEREDPLAYERLIST)
 PLAYERLIST = '\n'.join(PLAYERLIST)
@@ -384,14 +379,6 @@ MAFIATEXT = input("Text for MAFIA thread: ")
 MAFIALINK = input("Link for MAFIA thread: ")
 MAFIATITLE = input("Title for MAFIA thread link: ")
 MAFIATHREAD = makeOP(browser, "mafia", users=[MAFIAONEPLAYER,MAFIATWOPLAYER], mods=[args.listmod])
-
-# fill in a few last variables and make the IC thread
-ICPICTURE = input("Picture for IC thread: ")
-ICTEXT = input("Text for IC thread: ")
-ICLINK = input("Link for IC thread: ")
-ICTITLE = input("Title for IC thread link: ")
-ICTHREAD = makeOP(browser, "ic", mods=[ICPLAYER, args.listmod])
-
 
 # fill in a few last variables and make the dead thread
 DEADPICTURE = input("Picture for dead thread: ")
