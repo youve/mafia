@@ -78,7 +78,7 @@ def makeOP(browser, whichThread, users=None, mods=None):
             browser.implicitly_wait(10)
     button = browser.find_element_by_name('post')
     button.click()
-    browser.implicitly_wait(20)
+    browser.implicitly_wait(30)
     threadUrl = browser.current_url
     elem = browser.find_element_by_partial_link_text('Bookmark topic')
     elem.click()
@@ -160,12 +160,12 @@ def makeGameDescription():
     elif "urw" in args.title.lower():
         DOINGWHAT = "[code]" + input("Output of `urwbot, start`: ") + "[/code]"
     else:
-        DOINGWHAT = input('Hello. In this game I\'ll be _____')
+        DOINGWHAT = input('Hello. In this game I\'ll be _____ ')
 
     IMG = input('Upload an image: ')
     LINK = input('Link: ')
-    TITLE = input('Title for link: ')
-    EXPLANATION = input(f'Finish this sentence: Such as {TITLE}, ______')
+    TITLE = input('Such as [Title for link],: ')
+    EXPLANATION = input(f'Finish this sentence: Such as {TITLE}, ______ ')
     DESCRIPTION = f"""[center][thumb=600]{IMG}[/thumb][/center]\n
         \n
         Hello. In this game I'll be  {DOINGWHAT}
