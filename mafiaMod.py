@@ -78,7 +78,7 @@ def makeOP(browser, whichThread, users=None, mods=None):
             browser.implicitly_wait(10)
     button = browser.find_element_by_name('post')
     button.click()
-    browser.implicitly_wait(30)
+    elem = WebDriverWait(browser, 10).until(EC.title_contains(args.title.title()))
     threadUrl = browser.current_url
     elem = browser.find_element_by_partial_link_text('Bookmark topic')
     elem.click()
