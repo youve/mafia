@@ -11,7 +11,7 @@ import pprint
 import readline
 import datetime
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys    
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
@@ -39,7 +39,7 @@ def login(browser, url):
     elem = browser.find_element_by_name("password")
     elem.clear()
     input("Type your password in the browser and then hit return here when you're done")
-    elem = WebDriverWait(browser, 10).until(EC.title_contains("Index"))
+    elem = WebDriverWait(browser, 60).until(EC.title_contains("Index"))
     browser.get(url)
 
 def makeOP(browser, whichThread, users=None, mods=None):
@@ -68,17 +68,17 @@ def makeOP(browser, whichThread, users=None, mods=None):
             elem.send_keys(user)
             elem = browser.find_element_by_id('private_users_add_button')
             elem.click()
-            browser.implicitly_wait(10)
+            browser.implicitly_wait(60)
     if mods:
         for mod in mods:
             elem = browser.find_element_by_id('private_mods_input')
             elem.send_keys(mod)
             elem = browser.find_element_by_id('private_mods_add_button')
             elem.click()
-            browser.implicitly_wait(10)
+            browser.implicitly_wait(60)
     button = browser.find_element_by_name('post')
     button.click()
-    elem = WebDriverWait(browser, 10).until(EC.title_contains(args.title.title()))
+    elem = WebDriverWait(browser, 60).until(EC.title_contains(args.title.title()))
     threadUrl = browser.current_url
     elem = browser.find_element_by_partial_link_text('Bookmark topic')
     elem.click()
@@ -93,7 +93,7 @@ def listFiles(folder):
     print(f'\nFound {len(files)} files in {folder}: {", ".join(files)}')
     return files
 
-def readFile(folder, file): 
+def readFile(folder, file):
     '''Load a file from a directory, then return the file as a string'''
     print(f'\nLoading ./files/{folder}/{file}\n')
     abspath = os.path.abspath(__file__)
@@ -107,14 +107,14 @@ def readFile(folder, file):
 
 def preparePost(post):
     '''fill in the placeholders with real data'''
-    for placeholder in ('GAMENUMBER', 'GAMETITLE', 'MAFIATHREAD', 
-            'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD', 
-            'DESCRIPTION', 'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 
-            'PLAYERLIST', 'ROLES', 'EVENTS', 'YOUTUBE', 'DEADPICTURE', 
-            'DEADTEXT', 'DEADLINK', 'DEADTITLE', 'MAFIAPICTURE', 
-            'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE', 'MAFIAONEROLE', 
-            'MAFIATWOROLE', 'MAFIAONEPLAYER', 'MAFIATWOPLAYER', 
-            'MAFIAONECOLOUR', 'MAFIATWOCOLOUR', 'SAMPLETOWNPMS', 
+    for placeholder in ('GAMENUMBER', 'GAMETITLE', 'MAFIATHREAD',
+            'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD',
+            'DESCRIPTION', 'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST',
+            'PLAYERLIST', 'ROLES', 'EVENTS', 'YOUTUBE', 'DEADPICTURE',
+            'DEADTEXT', 'DEADLINK', 'DEADTITLE', 'MAFIAPICTURE',
+            'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE', 'MAFIAONEROLE',
+            'MAFIATWOROLE', 'MAFIAONEPLAYER', 'MAFIATWOPLAYER',
+            'MAFIAONECOLOUR', 'MAFIATWOCOLOUR', 'SAMPLETOWNPMS',
             'SAMPLEMAFIAPMS', 'NIGHTACTIONREMINDERS', 'DEADLINE'):
         if re.search(placeholder, post):
             logging.debug(f'found {placeholder} ')
@@ -142,7 +142,7 @@ def sendRolePM(browser, recipient, role):
     elem = browser.find_element_by_name("message")
     elem.clear()
     post = readFile('roles', role)
-    elem.send_keys(post) 
+    elem.send_keys(post)
     input('Everything okay?')
     elem = browser.find_element_by_name("post")
     elem.click()
@@ -229,7 +229,7 @@ def lockThread(browser, whichThread):
         login(browser, whichThread)
     lock = browser.find_element_by_id("quick-mod-select")
     lock.submit()
-    elem = WebDriverWait(browser, 10).until(EC.title_contains('Lock topic'))
+    elem = WebDriverWait(browser, 60).until(EC.title_contains('Lock topic'))
     yes = browser.find_element_by_name('confirm')
     yes.click()
 
@@ -241,10 +241,10 @@ def updateThread(browser, whichThread, post):
         login(browser, whichThread)
     button = browser.find_element_by_class_name('buttons')
     button.click()
-    elem = WebDriverWait(browser, 10).until(EC.title_contains('Post a reply'))
+    elem = WebDriverWait(browser, 60).until(EC.title_contains('Post a reply'))
     textbox = browser.find_element_by_name('message')
     textbox.send_keys(post)
-    browser.implicitly_wait(20)
+    browser.implicitly_wait(60)
     button = browser.find_element_by_name('post')
     button.click()
 
@@ -308,7 +308,7 @@ ROLES = pprint.pformat(roles)
 
 
 for i, role in enumerate(roles):
-    print(role, ':', roles[role]) 
+    print(role, ':', roles[role])
     if i == 0:
         MAFIAONEPLAYER = role.replace(' (IC)', '')
         MAFIAONEPLAYER = MAFIAONEPLAYER.replace(' (SE)', '')
@@ -358,7 +358,7 @@ EVENTS, NIGHTACTIONREMINDERS = gameEvents()
 MODTHREAD = makeOP(browser, "mod", mods=[args.listmod])
 
 # fill in a few last variables and make the mafia thread
-DEADLINE = datetime.datetime.now() + datetime.timedelta(days=2, minutes=15)
+DEADLINE = datetime.datetime.now() + datetime.timedelta(days=2, minutes=30)
 DEADLINE = DEADLINE - datetime.timedelta(minutes=DEADLINE.minute % 15, seconds=DEADLINE.second, microseconds=DEADLINE.microsecond)
 print(f'{datetime.datetime.strftime(DEADLINE, "%Y %j %H:%M:%S")} day 1 starts')
 DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
@@ -397,7 +397,7 @@ for file in range(1,len(modFiles)):
 #send out role PMs
 for i, player in enumerate(players):
     logging.debug(f'player: {player}, roles: {roles}')
-    sendRolePM(browser, PLAYERLIST.split('\n')[i], roles[player]) 
+    sendRolePM(browser, PLAYERLIST.split('\n')[i], roles[player])
     time.sleep(5)
 
 publicFiles = listFiles('public')
