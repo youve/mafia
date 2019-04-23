@@ -17,15 +17,14 @@ def parse_page(url):
     return BeautifulSoup(res.text, "html.parser")
 
 def spin_clock(prod, frequency):
-    while prod.weekday() < 5 and frequency >= 1: # weekday
-        prod = prod + datetime.timedelta(seconds=1)
-        frequency -=1
-    while prod.weekday() > 4 and frequency >= 1: #Time passes more slowly on the weekends
-        prod = prod + datetime.timedelta(seconds=2)
-        frequency -=1
-    while prod.weekday() < 5 and frequency >= 1: #weekday
-        prod = prod + datetime.timedelta(seconds=1)
-        frequency -=1
+    while frequency >= 1:
+        while prod.weekday() < 5 and frequency >= 1: # weekday
+            prod = prod + datetime.timedelta(seconds=1)
+            frequency -=1
+        while prod.weekday() > 4 and frequency >= 1:
+            # Time passes more slowly on the weekends
+            prod = prod + datetime.timedelta(seconds=2)
+            frequency -=1
     return prod
 
 def prod_when(start, vla=False):
@@ -51,16 +50,16 @@ def prod_when(start, vla=False):
         prod -= datetime.timedelta(hours=args.night)
         prod = spin_clock(prod, 24*60*60)
         prod += datetime.timedelta(hours=args.night)
-        return prod.strftime("replace at [countdown]%F %T[/countdown]")
+        return prod.strftime(f"replace at [countdown]%F %T {tz}[/countdown]")
     if vla and nudge < daystart:
         nudge += datetime.timedelta(hours=args.frequency*1.5)
         replace = start + datetime.timedelta(days=5, hours=args.night)
-        return nudge.strftime("Two nudges = a prod at [countdown]%F %T[/countdown]") + \
-            replace.strftime(" or replace at [countdown]%F %T[/countdown]")
+        return nudge.strftime(f"Two nudges = a prod at [countdown]%F %T {tz}[/countdown]") + \
+            replace.strftime(f" or replace at [countdown]%F %T {tz}[/countdown]")
     if nudge > prod:
-        return nudge.strftime("nudge at [countdown]%F %T[/countdown]")
+        return nudge.strftime(f"nudge at [countdown]%F %T {tz}[/countdown]")
     else:
-        return prod.strftime("prod at [countdown]%F %T[/countdown]")
+        return prod.strftime(f"prod at [countdown]%F %T {tz}[/countdown]")
 
 parser = argparse.ArgumentParser(description='Determine when next prod is due.')
 parser.add_argument('-f', '--frequency', type=int, help="Frequency. Default: 36",
@@ -76,6 +75,11 @@ home_url = args.url + '&ppp=5'
 
 #Find players
 home = parse_page(home_url)
+if home.abbr.text == 'DST':
+    tz = '-5.00'
+else:
+    tz = '-6.00'
+
 players = []
 for fieldset in home.select('fieldset'):
     if fieldset.text.startswith('Living Players'):
