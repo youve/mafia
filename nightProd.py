@@ -72,6 +72,10 @@ for div in activity.select('span'):
             times.append(s.strip())
 
 for player in players:
+    if player not in times:
+        print(f'[b]{player}[/b] never posted in the game!')
+        continue
+
     last_post = times[times.index(player) + 2]
 
     if times.index(player) + 5 >= len(times): # last in the list not vla
