@@ -45,8 +45,8 @@ def prod_when(start, vla=False):
 parser = argparse.ArgumentParser(description='Determine when next prod is due.')
 parser.add_argument('-f', '--frequency', type=int, help="Frequency. Default: 36",
     default=36, nargs='?')
-parser.add_argument('-n', '--night', help='Night duration in hours.', type=int,
-    nargs='?', default=48)
+parser.add_argument('-n', '--night', help='Night duration in hours. Default: 48',
+    type=int, nargs='?', default=48)
 parser.add_argument('url', help='Game url', type=str)
 
 args = parser.parse_args()
