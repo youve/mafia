@@ -67,11 +67,13 @@ for div in activity.select('span'):
             times.append(s.strip())
 
 for player in players:
-    if times.index(player) + 5 >= len(players): # not vla
-        last_post = times[times.index(player) + 2]
+    last_post = times[times.index(player) + 2]
+
+    if times.index(player) + 5 >= len(times): # last in the list not vla
         players[player] = prod_when(last_post)
-    elif times.index(player) + 5 in players: # not vla
+    elif times[times.index(player) + 5] in players: # not vla
         players[player] = prod_when(last_post)
     else: # vla
         players[player] = prod_when(last_post, vla=True)
+
     print(f'[b]{player}[/b]: {players[player]}')
