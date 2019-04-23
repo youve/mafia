@@ -4,7 +4,12 @@
 import requests
 import argparse
 import datetime
-from bs4 import BeautifulSoup
+import sys
+try:
+    from bs4 import BeautifulSoup
+except ModuleNotFoundError:
+    print("This script requires the Beautiful Soup library version 4. Get it here: https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup")
+    sys.exit()
 
 def parse_page(url):
     res = requests.get(url)
