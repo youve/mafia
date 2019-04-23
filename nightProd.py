@@ -16,6 +16,18 @@ def parse_page(url):
     res.raise_for_status()
     return BeautifulSoup(res.text, "html.parser")
 
+def spin_clock(prod, frequency):
+    while prod.weekday() < 5 and frequency >= 1: # weekday
+        prod = prod + datetime.timedelta(seconds=1)
+        frequency -=1
+    while prod.weekday() > 4 and frequency >= 1: #Time passes more slowly on the weekends
+        prod = prod + datetime.timedelta(seconds=2)
+        frequency -=1
+    while prod.weekday() < 5 and frequency >= 1: #weekday
+        prod = prod + datetime.timedelta(seconds=1)
+        frequency -=1
+    return prod
+
 def prod_when(start, vla=False):
     frequency = args.frequency*60*60
     now = datetime.datetime.now()
@@ -30,20 +42,15 @@ def prod_when(start, vla=False):
         nudge += datetime.timedelta(hours=args.night)
     else:
         nudge = datetime.datetime(1,1,1)
-    while prod.weekday() < 5 and frequency >= 1: # weekday
-        prod = prod + datetime.timedelta(seconds=1)
-        frequency -=1
-    while prod.weekday() > 4 and frequency >= 1: #Time passes more slowly on the weekends
-        prod = prod + datetime.timedelta(seconds=2)
-        frequency -=1
-    while prod.weekday() < 5 and frequency >= 1: #weekday
-        prod = prod + datetime.timedelta(seconds=1)
-        frequency -=1
+
+    prod = spin_clock(prod, frequency)
 
     prod += datetime.timedelta(hours=args.night)
 
     if not vla and prod < daystart:
-        prod += datetime.timedelta(days=1)
+        prod -= datetime.timedelta(hours=args.night)
+        prod = spin_clock(prod, 24*60*60)
+        prod += datetime.timedelta(hours=args.night)
         return prod.strftime("replace at [countdown]%F %T[/countdown]")
     if vla and nudge < daystart:
         nudge += datetime.timedelta(hours=args.frequency*1.5)
