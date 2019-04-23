@@ -12,7 +12,10 @@ parser.add_argument('-f', '--frequency', type=int, help="Frequency. Default: 36"
     default=36, nargs='?')
 parser.add_argument('-v', '--vla', action='store_true', help='Are they V/LA?')
 parser.add_argument('-e', '--emoji', type=str, help="emoji", nargs='?', default='🌐')
-parser.add_argument('-c', '--countdown', help='Output in countdown format',  action="store_true")
+parser.add_argument('-c', '--countdown', help='Output in countdown format',
+    action="store_true")
+parser.add_argument('-n', '--night', help='Night duration in hours.', type=int,
+    nargs='?')
 
 args = parser.parse_args()
 
@@ -38,6 +41,9 @@ while prod.weekday() > 4 and frequency >= 1: #Time passes more slowly on the wee
 while prod.weekday() < 5 and frequency >= 1: #weekday
     prod = prod + datetime.timedelta(seconds=1)
     frequency -=1
+if args.night:
+    nudge += datetime.timedelta(hours=args.night)
+    prod += datetime.timedelta(hours=args.night)
 
 if args.countdown:
     if nudge > prod:
