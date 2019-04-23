@@ -19,11 +19,14 @@ def parse_page(url):
 def prod_when(start, vla=False):
     frequency = args.frequency*60*60
     now = datetime.datetime.now()
+    daystart = datetime.datetime.strptime(str(now.year) + times[9], '%Y%b %d, %I:%M%p')
+    daystart += datetime.timedelta(hours=args.night)
     if now.month == 1 and start.startswith('Dec'):
         now -= datetime.timedelta(days=40)
-    prod = datetime.datetime.strptime(str(now.year) + start, '%Y%b %d, %I:%M%p')
+    start = datetime.datetime.strptime(str(now.year) + start, '%Y%b %d, %I:%M%p')
+    prod = start
     if vla:
-        nudge = prod + datetime.timedelta(hours=args.frequency*1.5)
+        nudge = start + datetime.timedelta(hours=args.frequency*1.5)
         nudge += datetime.timedelta(hours=args.night)
     else:
         nudge = datetime.datetime(1,1,1)
@@ -36,7 +39,17 @@ def prod_when(start, vla=False):
     while prod.weekday() < 5 and frequency >= 1: #weekday
         prod = prod + datetime.timedelta(seconds=1)
         frequency -=1
+
     prod += datetime.timedelta(hours=args.night)
+
+    if not vla and prod < daystart:
+        prod += datetime.timedelta(days=1)
+        return prod.strftime("replace at [countdown]%F %T[/countdown]")
+    if vla and nudge < daystart:
+        nudge += datetime.timedelta(hours=args.frequency*1.5)
+        replace = start + datetime.timedelta(days=5, hours=args.night)
+        return nudge.strftime("Two nudges = a prod at [countdown]%F %T[/countdown]") + \
+            replace.strftime(" or replace at [countdown]%F %T[/countdown]")
     if nudge > prod:
         return nudge.strftime("nudge at [countdown]%F %T[/countdown]")
     else:
@@ -56,12 +69,12 @@ home_url = args.url + '&ppp=5'
 
 #Find players
 home = parse_page(home_url)
-players = {}
+players = []
 for fieldset in home.select('fieldset'):
     if fieldset.text.startswith('Living Players'):
         for player in fieldset.strings:
             if player != "Living Players":
-                players[player.split('(')[0].strip()] = ''
+                players.append(player.split('(')[0].strip())
 
 #Find last activity
 activity = parse_page(overview_url)
@@ -77,12 +90,14 @@ for player in players:
         continue
 
     last_post = times[times.index(player) + 2]
+    vla = False
+    try:
+        datetime.datetime.strptime(times[times.index(player) + 5], '%B %d %Y')
+        vla = True
+    except:
+        pass
 
-    if times.index(player) + 5 >= len(times): # last in the list not vla
-        players[player] = prod_when(last_post)
-    elif times[times.index(player) + 5] in players: # not vla
-        players[player] = prod_when(last_post)
-    else: # vla
-        players[player] = prod_when(last_post, vla=True)
-
-    print(f'[b]{player}[/b]: {players[player]}')
+    if vla:
+        print(f'[b]{player}[/b]: {prod_when(last_post, vla=True)}')
+    else:
+        print(f'[b]{player}[/b]: {prod_when(last_post)}')
