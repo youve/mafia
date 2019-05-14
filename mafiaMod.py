@@ -247,6 +247,7 @@ def updateThread(browser, whichThread, post):
     browser.implicitly_wait(60)
     button = browser.find_element_by_name('post')
     button.click()
+    WebDriverWait(browser, 60).until(EC.title_contains('Information'))
 
 setups = {
     'A1' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town neapolitan'] + ['vanilla townie'] * 5,
@@ -310,32 +311,28 @@ ROLES = pprint.pformat(roles)
 for i, role in enumerate(roles):
     print(role, ':', roles[role])
     if i == 0:
-        MAFIAONEPLAYER = role.replace(' (IC)', '')
         MAFIAONEPLAYER = MAFIAONEPLAYER.replace(' (SE)', '')
         MAFIAONEROLE = roles[role]
+        if role == 'mafia goon':
+          MAFIAONECOLOUR = 'purple'
+        else:
+          MAFIAONECOLOUR = 'indigo'
     elif i == 1:
-        MAFIATWOPLAYER = role.replace(' (IC)', '')
         MAFIATWOPLAYER = MAFIATWOPLAYER.replace(' (SE)', '')
         MAFIATWOROLE = roles[role]
+        MAFIATWOCOLOUR = 'purple'
 
 # initialise playerlist related variables
 NUMBEREDPLAYERLIST = []
 COLOUREDPLAYERLIST = []
 PLAYERLIST = []
 
-if args.setup in ('A1', 'A2', 'A3', 'B1', 'B2', 'B3'):
-    MAFIAONECOLOUR = 'indigo'
-else:
-    MAFIAONECOLOUR = 'purple'
-
-MAFIATWOCOLOUR = 'purple'
-
 #create variously formatted playerlist variables to be posted in various threads
 for i, player in enumerate(players):
     NUMBEREDPLAYERLIST.append(f"{i+1}) {player}")
-    if player == MAFIAONEPLAYER:
+    if player.replace(' (SE)', '') == MAFIAONEPLAYER:
         COLOUREDPLAYERLIST.append(f"[color=MAFIAONECOLOUR]{i+1}) {player}, {roles[player]}[/color]")
-    elif player == MAFIATWOPLAYER:
+    elif player.replace(' (SE)', '') == MAFIATWOPLAYER:
         COLOUREDPLAYERLIST.append(f"[color=MAFIATWOCOLOUR]{i+1}) {player}, {roles[player]}[/color]")
     else:
         COLOUREDPLAYERLIST.append(f"[color=green]{i+1}) {player}[/color]")
