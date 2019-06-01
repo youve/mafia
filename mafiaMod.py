@@ -311,14 +311,14 @@ ROLES = pprint.pformat(roles)
 for i, role in enumerate(roles):
     print(role, ':', roles[role])
     if i == 0:
-        MAFIAONEPLAYER = MAFIAONEPLAYER.replace(' (SE)', '')
+        MAFIAONEPLAYER = role.replace(' (SE)', '')
         MAFIAONEROLE = roles[role]
         if role == 'mafia goon':
           MAFIAONECOLOUR = 'purple'
         else:
           MAFIAONECOLOUR = 'indigo'
     elif i == 1:
-        MAFIATWOPLAYER = MAFIATWOPLAYER.replace(' (SE)', '')
+        MAFIATWOPLAYER = role.replace(' (SE)', '')
         MAFIATWOROLE = roles[role]
         MAFIATWOCOLOUR = 'purple'
 
