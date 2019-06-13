@@ -315,7 +315,7 @@ for i, role in enumerate(roles):
     if i == 0:
         MAFIAONEPLAYER = role.replace(' (SE)', '')
         MAFIAONEROLE = roles[role]
-        if role == 'mafia goon':
+        if MAFIAONEROLE == 'mafia goon':
           MAFIAONECOLOUR = 'purple'
         else:
           MAFIAONECOLOUR = 'indigo'
