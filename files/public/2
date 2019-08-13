@@ -1,26 +1,27 @@
-[color=grey][size=150][b]Newbie Setup[/size][/b]
-[wiki]2d3[/wiki] (as designed by [user]Cabd[/user]):[/color]
+[align=center][size=200][b]Setup Info[/b][/align][/size]
+[area=Newbie Setup][size=150][b]Newbie Setup[/size][/b]
+[wiki]NewD3[/wiki] (as designed by [user]RadiantCowbells[/user]):
 
 [table][row][cell][/cell][cell]A[/cell][cell]B[/cell][cell]C[/cell][/row]
-[row][cell]Mafia[/cell][cell][color=#FF0000]Mafia Roleblocker[/color][/cell][cell][color=#FF0000]Mafia Rolecop[/color][/cell][cell][color=#FF0000]Mafia Goon[/color][/cell][/row]
-[row][cell]Row 1[/cell][cell][color=#00FF00]Town Cop and Town Neapolitan[/color][/cell][cell][color=#00FF00]Town Cop and Town Tracker[/color][/cell][cell][color=#00FF00]Town Cop and Vanilla Townie[/color][/cell][/row]
-[row][cell]Row 2[/cell][cell][color=#00FF00]Town Jailkeeper and Town Doctor[/color][/cell][cell][color=#00FF00]Town Jailkeeper and Town Tracker[/color][/cell][cell][color=#00FF00]Town Jailkeeper and Vanilla Townie[/color][/cell][/row]
-[row][cell]Row 3[/cell][cell][color=#00FF00]Town Cop and Town Doctor[/color][/cell][cell][color=#00FF00]Town Neapolitan and Town Doctor[/color][/cell][cell][color=#00FF00]Town Tracker and Town Doctor[/color][/cell][/row][/table]
-Each Newbie Game will be given a setup that incorporates one mafia role from the top of a column, and then two town roles from a row below the selected mafia role.  The remaining six roles will be filled in by [color=#FF0000]one mafia goons[/color] and [color=#00FF00]five vanilla townies[/color] appropriately, to create a [color=#FF0000]2-mafia[/color] and [color=#00FF00]7-town[/color] setup.  
+[row][cell]Mafia[/cell][cell][color=red]Mafia Roleblocker[/color][/cell][cell][color=red]Mafia Rolecop[/color][/cell][cell][color=red]Mafia Goon[/color][/cell][/row]
+[row][cell]Row 1[/cell][cell][color=forestgreen]Town Cop and Town Doctor[/color][/cell][cell][color=forestgreen]Town Tracker and Town Friendly Neighbor[/color][/cell][cell][color=forestgreen]Town Cop and Vanilla Townie[/color][/cell][/row]
+[row][cell]Row 2[/cell][cell][color=forestgreen]Town Jailkeeper and Town Tracker[/color][/cell][cell][color=forestgreen]Town Jailkeeper and Town Friendly Neighbor[/color][/cell][cell][color=forestgreen]Town Jailkeeper and Vanilla Townie[/color][/cell][/row]
+[row][cell]Row 3[/cell][cell][color=forestgreen]Town Mason and Town Mason[/color][/cell][cell][color=forestgreen]Town Tracker and Town Doctor[/color][/cell][cell][color=forestgreen]Town Mason and Town Mason[/color][/cell][/row][/table]
+Each Newbie Game will be given a setup that incorporates one mafia role from the top of a column, and then two town roles from a row below the selected mafia role.  The remaining six roles will be filled in by [color=red]one mafia goon[/color] and [color=forestgreen]five vanilla townies[/color] appropriately, to create a [color=red]2-mafia[/color] and [color=forestgreen]7-town[/color] setup.
 
-All Newbie games use the [wiki]Natural Action Resolution[/wiki] system for determining Night action effects.  [color=#FF0000]Mafia Roleblocker [/color] action takes precedence over a [color=#00FF00]Town Jailkeeper[/color] action should that apply.
+All Newbie games use the [wiki]Natural Action Resolution[/wiki] system for determining Night action effects.  [color=red]Mafia Roleblocker [/color] action takes precedence over a [color=forestgreen]Town Jailkeeper[/color] action should that apply.
 
-Mafia can communicate in their Private Topic at all times.
+Mafia are able to communicate in their Private Topic at all times.[/area]
 
-[spoiler=Full Setups][u][i]Column A & Row 1:[/i][/u] Mafia Roleblocker, Mafia Goon, Town Cop, Town Neapolitan, Vanilla Townie x 5
-[u][i]Column A & Row 2:[/i][/u] Mafia Roleblocker, Mafia Goon, Town Jailkeeper, Town Doctor, Vanilla Townie x 5
-[u][i]Column A & Row 3:[/i][/u] Mafia Roleblocker, Mafia Goon, Town Cop, Town Doctor, Vanilla Townie x 5
-[u][i]Column B & Row 1:[/i][/u] Mafia Rolecop, Mafia Goon, Town Cop, Town Tracker, Vanilla Townie x 5
-[i][u]Column B & Row 2:[/u][/i] Mafia Rolecop, Mafia Goon, Town Jailkeeper, Town Tracker, Vanilla Townie x 5
-[u][i]Column B & Row 3:[/i][/u] Mafia Rolecop, Mafia Goon, Town Neapolitan, Town Doctor, Vanilla Townie x 5
+[spoiler=Full Setups][u][i]Column A & Row 1:[/i][/u] Mafia Roleblocker, Mafia Goon, Town Cop, Town Doctor, Vanilla Townie x 5
+[u][i]Column A & Row 2:[/i][/u] Mafia Roleblocker, Mafia Goon, Town Jailkeeper, Town Tracker, Vanilla Townie x 5
+[u][i]Column A & Row 3:[/i][/u] Mafia Roleblocker, Mafia Goon, Town Mason x2, Vanilla Townie x 5
+[u][i]Column B & Row 1:[/i][/u] Mafia Rolecop, Mafia Goon, Town Tracker, Town Friendly Neighbor, Vanilla Townie x 5
+[i][u]Column B & Row 2:[/u][/i] Mafia Rolecop, Mafia Goon, Town Jailkeeper, Town Friendly Neighbor, Vanilla Townie x 5
+[u][i]Column B & Row 3:[/i][/u] Mafia Rolecop, Mafia Goon, Town Tracker, Town Doctor, Vanilla Townie x 5
 [u][i]Column C & Row 1:[/i][/u] Mafia Goon x 2, Town Cop, Vanilla Townie x 6
 [i][u]Column C & Row 2:[/u][/i] Mafia Goon x 2, Town Jailkeeper, Vanilla Townie x 6
-[u][i]Column C & Row 3:[/i][/u] Mafia Goon x 2, Town Doctor, Town Tracker, Vanilla Townie x 5[/spoiler]
+[u][i]Column C & Row 3:[/i][/u] Mafia Goon x 2, Town Mason x2, Vanilla Townie x 5[/spoiler]
 
 [spoiler=Role PMs]SAMPLETOWNPMS
 

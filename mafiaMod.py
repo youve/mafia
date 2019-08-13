@@ -107,15 +107,15 @@ def readFile(folder, file):
 
 def preparePost(post):
     '''fill in the placeholders with real data'''
-    for placeholder in ('GAMENUMBER', 'GAMETITLE', 'MAFIATHREAD',
-            'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD',
-            'DESCRIPTION', 'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST',
-            'PLAYERLIST', 'ROLES', 'EVENTS', 'YOUTUBE', 'DEADPICTURE',
-            'DEADTEXT', 'DEADLINK', 'DEADTITLE', 'MAFIAPICTURE',
-            'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE', 'MAFIAONEROLE',
-            'MAFIATWOROLE', 'MAFIAONEPLAYER', 'MAFIATWOPLAYER',
-            'MAFIAONECOLOUR', 'MAFIATWOCOLOUR', 'SAMPLETOWNPMS',
-            'SAMPLEMAFIAPMS', 'NIGHTACTIONREMINDERS', 'DEADLINE'):
+    for placeholder in ('GAMENUMBER', 'GAMETITLE', 'DESCRIPTION', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
+            'MAFIATHREAD', 'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD', 'MASONTHREAD',
+            'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 'PLAYERLIST', 'MASONPLAYERLIST'
+            'ROLES', 'EVENTS', 'YOUTUBE', 'NIGHTACTIONREMINDERS', 'DEADLINE',
+            'DEADPICTURE', 'DEADTEXT', 'DEADLINK', 'DEADTITLE',
+            'MAFIAPICTURE', 'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE',
+            'MAFIAONEROLE', 'MAFIAONEPLAYER', 'MAFIAONECOLOUR',
+            'MAFIATWOROLE', 'MAFIATWOPLAYER', 'MAFIATWOCOLOUR',
+            'MASON1', 'MASON2', 'MASONPICTURE', 'MASONTEXT', 'MASONTITLE', 'MASONLINK', ):
         if re.search(placeholder, post):
             logging.debug(f'found {placeholder} ')
             #this doesn't work:
@@ -249,7 +249,31 @@ def updateThread(browser, whichThread, post):
     button.click()
     WebDriverWait(browser, 60).until(EC.title_contains('Information'))
 
-setups = {
+Matrix6 = {
+    '1' : ['mafia goon', 'mafia goon', 'town jailkeeper'] + ['vanilla townie'] * 6,
+    '2' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town doctor'] + ['vanilla townie'] * 5,
+    '3' : ['mafia goon', 'mafia goon', '1-shot bulletproof townie', 'town tracker'] + ['vanilla townie'] * 5,
+    'A' : ['mafia roleblocker', 'mafia goon', 'town jailkeeper', '1-shot bulletproof townie'] + ['vanilla townie'] * 5,
+    'B' : ['mafia goon', 'mafia goon', 'town cop'] + ['vanilla townie'] * 6,
+    'C' : ['mafia goon', 'mafia goon', 'town tracker', 'town doctor'] + ['vanilla townie'] * 5,
+}
+
+Nine12 = {
+    '1' : ['mafia rolecop', 'mafia goon', 'town vanilla cop', 'town tracker'] + ['vanilla townie'] * 5,
+    '2' : ['mafia rolecop', 'mafia goon', 'town follower', 'town tracker'] + ['vanilla townie'] * 5,
+    '3' : ['mafia rolecop', 'mafia goon', 'town follower', 'town jailkeeper'] + ['vanilla townie'] * 5,
+    '4' : ['mafia 1-shot strongman', 'mafia goon', 'town follower', 'town jailkeeper'] + ['vanilla townie'] * 5,
+    '5' : ['mafia 1-shot strongman', 'mafia goon', 'town jailkeeper', 'town babysitter'] + ['vanilla townie'] * 5,
+    '6' : ['mafia 1-shot strongman', 'mafia goon', 'town babysitter', 'town roleblocker'] + ['vanilla townie'] * 5,
+    '7' : ['mafia rolecop', 'mafia goon', 'town babysitter', 'town roleblocker'] + ['vanilla townie'] * 5,
+    '8' : ['mafia rolecop', 'mafia goon', 'town roleblocker', 'town rolecop'] + ['vanilla townie'] * 5,
+    '9' : ['mafia rolecop', 'mafia goon', 'town rolecop', 'town doctor'] + ['vanilla townie'] * 5,
+    '10' : ['mafia roleblocker', 'mafia goon', 'town rolecop', 'town doctor'] + ['vanilla townie'] * 5,
+    '11' : ['mafia roleblocker', 'mafia goon', 'town doctor', 'town vanilla cop'] + ['vanilla townie'] * 5,
+    '12' : ['mafia roleblocker', 'mafia goon', 'town vanilla cop', 'town tracker'] + ['vanilla townie'] * 5,
+}
+
+TwoD3 = {
     'A1' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town neapolitan'] + ['vanilla townie'] * 5,
     'A2' : ['mafia roleblocker', 'mafia goon', 'town jailkeeper', 'town doctor'] + ['vanilla townie'] * 5,
     'A3' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town doctor'] + ['vanilla townie'] * 5,
@@ -261,10 +285,30 @@ setups = {
     'C3' : ['mafia goon', 'mafia goon', 'town tracker', 'town doctor'] + ['vanilla townie'] * 5,
 }
 
+NewD3 = {
+    'A1' : ['mafia roleblocker', 'mafia goon', 'town cop', 'town doctor'] + ['vanilla townie'] * 5,
+    'A2' : ['mafia roleblocker', 'mafia goon', 'town jailkeeper', 'town tracker'] + ['vanilla townie'] * 5,
+    'A3' : ['mafia roleblocker', 'mafia goon', 'town mason1', 'town mason2'] + ['vanilla townie'] * 5,
+    'B1' : ['mafia rolecop', 'mafia goon', 'town tracker', 'town friendly neighbor'] + ['vanilla townie'] * 5,
+    'B2' : ['mafia rolecop', 'mafia goon', 'town jailkeeper', 'town friendly neighbor'] + ['vanilla townie'] * 5,
+    'B3' : ['mafia rolecop', 'mafia goon', 'town tracker', 'town doctor'] + ['vanilla townie'] * 5,
+    'C1' : ['mafia goon', 'mafia goon', 'town cop'] + ['vanilla townie'] * 6,
+    'C2' : ['mafia goon', 'mafia goon', 'town jailkeeper'] + ['vanilla townie'] * 6,
+    'C3' : ['mafia goon', 'mafia goon', 'town mason1', 'town mason2'] + ['vanilla townie'] * 5,
+}
+
+setups = {
+    'Matrix6' : Matrix6,
+    '9:12' : Nine12,
+    '2d3' : TwoD3,
+    'NewD3' : NewD3,
+}
+
 #args
 parser = argparse.ArgumentParser(description='Setup a newbie game.')
-parser.add_argument('setup', metavar='setup', type=str, choices=setups.keys(),
-                    help='Have the playerlist copied and ready to go.')
+parser.add_argument('setup', metavar='setup', type=str, choices=setups.keys(), default='NewD3',
+                    help='Matrix6, 9:12, 2d3, or NewD3 (default)')
+parser.add_argument('subsetup', metavar='subsetup', type=str, help='A1, 12, C, etc')
 parser.add_argument('number', metavar='gamenumber', type=int, help="Game number")
 parser.add_argument('title', metavar="gametitle", type=str, help="Name of the theme")
 parser.add_argument('-u', '--username', metavar="username", type=str, help="Moderator's username")
@@ -304,8 +348,9 @@ logging.debug(f"Playerlist: {', '.join(players)}")
 
 shuffledPlayers = players[:]
 random.shuffle(shuffledPlayers)
+subsetup = setups[args.setup][args.subsetup]
 
-roles = dict(zip(shuffledPlayers,setups[args.setup]))
+roles = dict(zip(shuffledPlayers,subsetup))
 
 ROLES = pprint.pformat(roles)
 
@@ -323,26 +368,36 @@ for i, role in enumerate(roles):
         MAFIATWOPLAYER = role.replace(' (SE)', '')
         MAFIATWOROLE = roles[role]
         MAFIATWOCOLOUR = 'purple'
+    elif i == 2 and roles[role] == 'town mason1':
+        MASON1 = role.replace(' (SE)', '')
+    elif i == 3 and roles[role] == 'town mason2':
+        MASON2 = role.replace(' (SE)', '')
 
 # initialise playerlist related variables
 NUMBEREDPLAYERLIST = []
 COLOUREDPLAYERLIST = []
+MASONPLAYERLIST = []
 PLAYERLIST = []
 
 #create variously formatted playerlist variables to be posted in various threads
 for i, player in enumerate(players):
     NUMBEREDPLAYERLIST.append(f"{i+1}) {player}")
     if player.replace(' (SE)', '') == MAFIAONEPLAYER:
-        COLOUREDPLAYERLIST.append(f"[color=MAFIAONECOLOUR]{i+1}) {player}, {roles[player]}[/color]")
+        COLOUREDPLAYERLIST.append(f"[color=MAFIAONECOLOUR]{i + 1}) {player}, {roles[player]}[/color]")
     elif player.replace(' (SE)', '') == MAFIATWOPLAYER:
-        COLOUREDPLAYERLIST.append(f"[color=MAFIATWOCOLOUR]{i+1}) {player}, {roles[player]}[/color]")
+        COLOUREDPLAYERLIST.append(f"[color=MAFIATWOCOLOUR]{i + 1}) {player}, {roles[player]}[/color]")
     else:
-        COLOUREDPLAYERLIST.append(f"[color=green]{i+1}) {player}[/color]")
+        COLOUREDPLAYERLIST.append(f"[color=green]{i + 1}) {player}[/color]")
+    if player.replace(' (SE)', '') in (MASON1, MASON2):
+        MASONPLAYERLIST.append(f"[color=green]{i + 1} {player}, town mason[/color]")
+    else:
+        MASONPLAYERLIST.append(f"{i+1}) {player}")
     PLAYERLIST.append(player.replace(' (SE)', ''))
 
 NUMBEREDPLAYERLIST = '\n'.join(NUMBEREDPLAYERLIST)
 PLAYERLIST = '\n'.join(PLAYERLIST)
 COLOUREDPLAYERLIST = '\n'.join(COLOUREDPLAYERLIST)
+MASONPLAYERLIST = '\n'.join(MASONPLAYERLIST)
 
 browser = webdriver.Firefox()
 
@@ -369,7 +424,7 @@ SAMPLEMAFIAPMS = ""
 SAMPLETOWNPMS = ""
 for role in ("mafia goon", "mafia rolecop", "mafia roleblocker"):
     SAMPLEMAFIAPMS += readFile('roles', role)
-for role in ("vanilla townie", "town jailkeeper", "town cop", "town neapolitan", "town tracker", "town doctor"):
+for role in ("vanilla townie", "town jailkeeper", "town cop", "town mason", "town tracker", "town doctor", "town friendly neighbor"):
     SAMPLETOWNPMS += readFile('roles', role)
 
 #fill in a few last variables and make the mafia thread
@@ -377,7 +432,14 @@ MAFIAPICTURE = input("Picture for MAFIA thread: ")
 MAFIATEXT = input("Text for MAFIA thread: ")
 MAFIALINK = input("Link for MAFIA thread: ")
 MAFIATITLE = input("Title for MAFIA thread link: ")
-MAFIATHREAD = makeOP(browser, "mafia", users=[MAFIAONEPLAYER,MAFIATWOPLAYER], mods=[args.listmod])
+MAFIATHREAD = makeOP(browser, "mafia", users=[MAFIAONEPLAYER, MAFIATWOPLAYER], mods=[args.listmod])
+
+if 'town mason1' in subsetup:
+    MASONPICTURE = input("Picture for MASON thread: ")
+    MASONTEXT = input("Text for MASON thread: ")
+    MASONLINK = input("Link for MASON thread: ")
+    MASONTITLE = input("Title for MASON thread link: ")
+    MASONTHREAD = makeOP(browser, "mason", users=[MASON1, MASON2], mods=[args.listmod])
 
 # fill in a few last variables and make the dead thread
 DEADPICTURE = input("Picture for dead thread: ")
