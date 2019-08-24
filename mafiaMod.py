@@ -79,6 +79,7 @@ def makeOP(browser, whichThread, users=None, mods=None):
     button = browser.find_element_by_name('post')
     button.click()
     elem = WebDriverWait(browser, 60).until(EC.title_contains(args.title.title()))
+    time.sleep(1)
     threadUrl = browser.current_url
     elem = browser.find_element_by_partial_link_text('Bookmark topic')
     elem.click()
@@ -102,20 +103,26 @@ def readFile(folder, file):
         post = list(f)
     post = ''.join(post)
     logging.debug('preparing post')
-    post = preparePost(post)
+    if folder == 'roles':
+        post = preparePost(post, rolePM=True)
+    else:
+        post = preparePost(post)
     return post
 
-def preparePost(post):
+def preparePost(post, rolePM=False):
     '''fill in the placeholders with real data'''
-    for placeholder in ('GAMENUMBER', 'GAMETITLE', 'DESCRIPTION', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
+    placeholders = ['GAMENUMBER', 'GAMETITLE', 'DESCRIPTION', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
             'MAFIATHREAD', 'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD', 'MASONTHREAD',
-            'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 'PLAYERLIST', 'MASONPLAYERLIST'
+            'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 'PLAYERLIST', 'MASONPLAYERLIST',
             'ROLES', 'EVENTS', 'YOUTUBE', 'NIGHTACTIONREMINDERS', 'DEADLINE',
             'DEADPICTURE', 'DEADTEXT', 'DEADLINK', 'DEADTITLE',
             'MAFIAPICTURE', 'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE',
             'MAFIAONEROLE', 'MAFIAONEPLAYER', 'MAFIAONECOLOUR',
             'MAFIATWOROLE', 'MAFIATWOPLAYER', 'MAFIATWOCOLOUR',
-            'MASON1', 'MASON2', 'MASONPICTURE', 'MASONTEXT', 'MASONTITLE', 'MASONLINK', ):
+            'MASONPICTURE', 'MASONTEXT', 'MASONTITLE', 'MASONLINK']
+    if rolePM:
+        placeholders.extend['MASON1', 'MASON2']
+    for placeholder in placeholders:
         if re.search(placeholder, post):
             logging.debug(f'found {placeholder} ')
             #this doesn't work:
@@ -180,38 +187,20 @@ def gameEvents():
     mafiaActions = ['[*][color=purple]___[/color] is killing [color=green]___[/color].\n']
     reminders = []
     for k, v in roles.items():
-        if v == 'town cop':
-            townActions.append(f'[*][color=green]{k}[/color] is copping [color=white]___[/color].\n')
-            reminders.append('''Cop didn't submit your night actions:
-                            [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to investigate tonight, if anybody.[/code]''')
-        elif v == 'town doctor':
-            townActions.append(f'[*][color=green]{k}[/color] is protecting [color=white]___[/color].\n')
-            reminders.append('''Doc didn't submit your night actions:
-                            [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to protect tonight, if anybody.[/code]''')
-        elif v == 'town jailkeeper':
-            townActions.append(f'[*][color=green]{k}[/color] is jailkeeping [color=white]___[/color].\n')
-            reminders.append('''Jailkeeper didn't submit your night actions:
-                            [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to jailkeep tonight, if anybody.[/code]''')
-        elif v == 'town neapolitan':
-            townActions.append(f'[*][color=green]{k}[/color] is checking [color=white]___[/color].\n')
-            reminders.append('''Neapolitan didn't submit your night actions:
-                            [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to investigate tonight, if anybody.[/code]''')
-        elif v == 'town tracker':
-            townActions.append(f'[*][color=green]{k}[/color] is tracking [color=white]___[/color].\n')
-            reminders.append('''Tracker didn't submit your night actions:
-                            [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to track tonight, if anybody.[/code]''')
-        elif v == 'mafia roleblocker':
-            mafiaActions.append(f'[*][color=indigo]{k}[/color] is roleblocking [color=green]___[/color].\n')
-            reminders.append('''Roleblocker didn't submit your night actions:
-                            [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to kill and/or roleblock tonight, if anybody.[/code]''')
-        elif v == 'mafia rolecop':
-            mafiaActions.append(f'[*][color=indigo]{k}[/color] is rolecopping [color=green]___[/color].\n')
-            reminders.append('''Rolecop didn't submit your night actions:
-                            [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to kill and/or rolecop tonight, if anybody.[/code]''')
-        elif v == 'mafia goon' and 'mafia roleblocker' not in roles.values() and 'mafia rolecop' not in roles.values():
-            reminders = list(set(reminders + ['''Mafia didn't submit your night actions:
-                            [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to kill tonight, if anybody.[/code]''']))
-    for n in range(1,3):
+        if role_verbs.get(v):
+            if v.startswith('mafia'):
+                mafiaActions.append(f'[*][color=indigo]{k}[/color] is {role_verbs[v]}ing [color=green]___[/color].\n')
+                reminders.append(f'''{k}, {v} didn't submit their night actions:
+                    [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to kill and/or {v} tonight, if anybody.[/code]''')
+            else:
+                if role_verbs[v].endswith('e'):
+                    townActions.append(f'[*][color=green]{k}[/color] is {role_verbs[v][:-1]}ing [color=white]___[/color].\n')
+                else:
+                    townActions.append(f'[*][color=green]{k}[/color] is {role_verbs[v]}ing [color=white]___[/color].\n')
+                reminders.append(f'''{k}, {v} didn't submit their night actions:
+                    [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to {v} tonight, if anybody.[/code]''')
+
+    for n in range(1,4):
         event = event + f"[area=night {n}][list]"
         for action in townActions:
             event = event + action
@@ -248,6 +237,23 @@ def updateThread(browser, whichThread, post):
     button = browser.find_element_by_name('post')
     button.click()
     WebDriverWait(browser, 60).until(EC.title_contains('Information'))
+
+role_verbs={
+    'mafia 1-shot strongman' : 'strongman kill',
+    'mafia roleblocker' : 'roleblock',
+    'mafia rolecop' : 'rolecop',
+    'town babysitter' : 'babysit',
+    'town cop' : 'investigate',
+    'town doctor' : 'protect',
+    'town follower' : 'follow',
+    'town friendly neighbor' : 'inform',
+    'town jailkeeper' : 'jailkeep',
+    'town neapolitan' : 'investigate',
+    'town roleblocker' : 'roleblock',
+    'town rolecop' : 'rolecop',
+    'town tracker' : 'track',
+    'town vanilla cop' : 'vanilla cop'
+}
 
 Matrix6 = {
     '1' : ['mafia goon', 'mafia goon', 'town jailkeeper'] + ['vanilla townie'] * 6,
@@ -306,7 +312,7 @@ setups = {
 
 #args
 parser = argparse.ArgumentParser(description='Setup a newbie game.')
-parser.add_argument('setup', metavar='setup', type=str, choices=setups.keys(), default='NewD3',
+parser.add_argument('--setup', metavar='setup', type=str, choices=setups.keys(), default='NewD3',
                     help='Matrix6, 9:12, 2d3, or NewD3 (default)')
 parser.add_argument('subsetup', metavar='subsetup', type=str, help='A1, 12, C, etc')
 parser.add_argument('number', metavar='gamenumber', type=int, help="Game number")
@@ -314,7 +320,7 @@ parser.add_argument('title', metavar="gametitle", type=str, help="Name of the th
 parser.add_argument('-u', '--username', metavar="username", type=str, help="Moderator's username")
 parser.add_argument('-l', '--listmod', metavar='listmod', type=str, help='Listmod\'s username', default='PenguinPower', nargs='?')
 parser.add_argument('totalPlayers', metavar="totalPlayers", type=int, help="How many players", nargs='?', default=9)
-parser.add_argument('-s', '--spectators', metavar="spectators", type=str, help="'Spectator1 Spectator2'", nargs='?', default='hubris')
+parser.add_argument('-s', '--spectators', metavar="spectators", type=str, help="'Spectator1 Spectator2'", nargs='?')
 
 args = parser.parse_args()
 args.spectators = args.spectators.split()
@@ -353,7 +359,10 @@ subsetup = setups[args.setup][args.subsetup]
 roles = dict(zip(shuffledPlayers,subsetup))
 
 ROLES = pprint.pformat(roles)
-
+MASON1 = '[Mason1]'
+MASON2 = '[Mason2]'
+MASONTHREAD = '[Mason thread]'
+MAFIATHREAD = '[Mafia thread]'
 
 for i, role in enumerate(roles):
     print(role, ':', roles[role])
@@ -419,12 +428,13 @@ DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
 print(f'[countdown]{DEADLINE}[/countdown]')
 
 #create sample role PMs for public thread and mafia private thread
-MAFIATHREAD = '' # can't have the mafia link in these
+MAFIATHREAD = 'mafia PT' # can't have the mafia link in these
+MASONTHREAD = 'mason PT'
 SAMPLEMAFIAPMS = ""
 SAMPLETOWNPMS = ""
 for role in ("mafia goon", "mafia rolecop", "mafia roleblocker"):
     SAMPLEMAFIAPMS += readFile('roles', role)
-for role in ("vanilla townie", "town jailkeeper", "town cop", "town mason", "town tracker", "town doctor", "town friendly neighbor"):
+for role in ("vanilla townie", "town jailkeeper", "town cop", "town mason1", "town tracker", "town doctor", "town friendly neighbor"):
     SAMPLETOWNPMS += readFile('roles', role)
 
 #fill in a few last variables and make the mafia thread
