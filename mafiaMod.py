@@ -121,7 +121,7 @@ def preparePost(post, rolePM=False):
             'MAFIATWOROLE', 'MAFIATWOPLAYER', 'MAFIATWOCOLOUR',
             'MASONPICTURE', 'MASONTEXT', 'MASONTITLE', 'MASONLINK']
     if rolePM:
-        placeholders.extend['MASON1', 'MASON2']
+        placeholders.extend(['MASON1', 'MASON2'])
     for placeholder in placeholders:
         if re.search(placeholder, post):
             logging.debug(f'found {placeholder} ')
