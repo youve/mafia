@@ -57,7 +57,7 @@ def makeOP(browser, whichThread, users=None, mods=None):
         login(browser, url)
     elem = browser.find_element_by_name("subject")
     elem.clear()
-    elem.send_keys(f"Newbie {args.number} | {args.title.title()} | {whichPT.title()}")
+    elem.send_keys(f"Newbie {GAMENUMBER} | {GAMETITLE} | {whichPT.title()}")
     elem = browser.find_element_by_name("message")
     elem.clear()
     post = readFile(whichThread, '0')
@@ -78,7 +78,7 @@ def makeOP(browser, whichThread, users=None, mods=None):
             time.sleep(5)
     button = browser.find_element_by_name('post')
     button.click()
-    elem = WebDriverWait(browser, 60).until(EC.title_contains(args.title.title()))
+    elem = WebDriverWait(browser, 60).until(EC.title_contains(GAMETITLE))
     time.sleep(1)
     threadUrl = browser.current_url
     elem = browser.find_element_by_partial_link_text('Bookmark topic')
@@ -94,7 +94,7 @@ def listFiles(folder):
     print(f'\nFound {len(files)} files in {folder}: {", ".join(files)}')
     return files
 
-def readFile(folder, file):
+def readFile(folder, file, rolePM=False):
     '''Load a file from a directory, then return the file as a string'''
     print(f'\nLoading ./files/{folder}/{file}\n')
     abspath = os.path.abspath(__file__)
@@ -103,17 +103,14 @@ def readFile(folder, file):
         post = list(f)
     post = ''.join(post)
     logging.debug('preparing post')
-    if folder == 'roles':
-        post = preparePost(post, rolePM=True)
-    else:
-        post = preparePost(post)
+    post = preparePost(post, rolePM)
     return post
 
 def preparePost(post, rolePM=False):
     '''fill in the placeholders with real data'''
     placeholders = ['GAMENUMBER', 'GAMETITLE', 'DESCRIPTION', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
             'MAFIATHREAD', 'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD', 'MASONTHREAD',
-            'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 'PLAYERLIST', 'MASONPLAYERLIST',
+            'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 'MASONPLAYERLIST', 'PLAYERLIST',
             'ROLES', 'EVENTS', 'YOUTUBE', 'NIGHTACTIONREMINDERS', 'DEADLINE',
             'DEADPICTURE', 'DEADTEXT', 'DEADLINK', 'DEADTITLE',
             'MAFIAPICTURE', 'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE',
@@ -129,6 +126,9 @@ def preparePost(post, rolePM=False):
             #post = re.sub(placeholder, f'{placeholder}', post)
             #TODO: find a way to do this without eval
             post = re.sub(placeholder, eval(placeholder), post)
+            post = re.sub("via [url][/url]", "", post)
+            post = re.sub("[url][/url]", "", post)
+            post = re.sub("[*][url=[Mason thread]]Mason PT[/url]", "", post)
     return post
 
 def sendRolePM(browser, recipient, role):
@@ -145,10 +145,10 @@ def sendRolePM(browser, recipient, role):
     elem.click()
     elem = browser.find_element_by_name("subject")
     elem.clear()
-    elem.send_keys(f"Newbie {args.number} | {args.title.title()} | Role PM")
+    elem.send_keys(f"Newbie {GAMENUMBER} | {GAMETITLE} | Role PM")
     elem = browser.find_element_by_name("message")
     elem.clear()
-    post = readFile('roles', role)
+    post = readFile('roles', role, rolePM=True)
     elem.send_keys(post)
     input('Everything okay?')
     elem = browser.find_element_by_name("post")
@@ -158,13 +158,13 @@ def makeGameDescription():
     '''Create and return the description that goes at the start of the public game'''
     print('\nMaking game description\n')
     DOINGWHAT = ''
-    if "stuff i found online" in args.title.lower():
+    if "stuff i found online" in GAMETITLE.lower():
         DOINGWHAT = "showcasing cool stuff I found/learned about online via my RSS reader and maybe talking some about why I think it's cool. "
-    elif "zoo" in args.title.lower():
+    elif "zoo" in GAMETITLE.lower():
         DOINGWHAT = "showing pictures of cute baby zoo animals. "
-    elif "cake" in args.title.lower():
+    elif "cake" in GAMETITLE.lower():
         DOINGWHAT = "showing pictures of failed cakes by professional bakers."
-    elif "urw" in args.title.lower():
+    elif "urw" in GAMETITLE.lower():
         DOINGWHAT = "[code]" + input("Output of `urwbot, start`: ") + "[/code]"
     else:
         DOINGWHAT = input('Hello. In this game I\'ll be _____ ')
@@ -364,6 +364,16 @@ MASON2 = '[Mason2]'
 MASONTHREAD = '[Mason thread]'
 MAFIATHREAD = '[Mafia thread]'
 
+#create sample role PMs for public thread and mafia private thread
+MAFIATHREAD = 'mafia PT' # can't have the mafia link in these
+MASONTHREAD = 'mason PT'
+SAMPLEMAFIAPMS = ""
+SAMPLETOWNPMS = ""
+for role in ("mafia goon", "mafia rolecop", "mafia roleblocker"):
+    SAMPLEMAFIAPMS += readFile('roles', role)
+for role in ("vanilla townie", "town jailkeeper", "town cop", "town mason1", "town tracker", "town doctor", "town friendly neighbor"):
+    SAMPLETOWNPMS += readFile('roles', role)
+
 for i, role in enumerate(roles):
     print(role, ':', roles[role])
     if i == 0:
@@ -426,16 +436,6 @@ DEADLINE = DEADLINE - datetime.timedelta(minutes=DEADLINE.minute % 15, seconds=D
 print(f'{datetime.datetime.strftime(DEADLINE, "%Y %j %H:%M:%S")} day 1 starts')
 DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
 print(f'[countdown]{DEADLINE}[/countdown]')
-
-#create sample role PMs for public thread and mafia private thread
-MAFIATHREAD = 'mafia PT' # can't have the mafia link in these
-MASONTHREAD = 'mason PT'
-SAMPLEMAFIAPMS = ""
-SAMPLETOWNPMS = ""
-for role in ("mafia goon", "mafia rolecop", "mafia roleblocker"):
-    SAMPLEMAFIAPMS += readFile('roles', role)
-for role in ("vanilla townie", "town jailkeeper", "town cop", "town mason1", "town tracker", "town doctor", "town friendly neighbor"):
-    SAMPLETOWNPMS += readFile('roles', role)
 
 #fill in a few last variables and make the mafia thread
 MAFIAPICTURE = input("Picture for MAFIA thread: ")
