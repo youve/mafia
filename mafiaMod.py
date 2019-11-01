@@ -358,7 +358,9 @@ subsetup = setups[args.setup][args.subsetup]
 
 roles = dict(zip(shuffledPlayers,subsetup))
 
-ROLES = pprint.pformat(roles)
+ROLES = ""
+for k, v in roles.items():
+    ROLES += f'{v}: {k}\n'
 MASON1 = '[Mason1]'
 MASON2 = '[Mason2]'
 MASONTHREAD = '[Mason thread]'
