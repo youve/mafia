@@ -126,9 +126,9 @@ def preparePost(post, rolePM=False):
             #post = re.sub(placeholder, f'{placeholder}', post)
             #TODO: find a way to do this without eval
             post = re.sub(placeholder, eval(placeholder), post)
-            post = re.sub("via [url][/url]", "", post)
-            post = re.sub("[url][/url]", "", post)
-            post = re.sub("[*][url=[Mason thread]]Mason PT[/url]", "", post)
+            post = post.replace("via [url][/url]", "")
+            post = post.replace("[url][/url]", "")
+            post = post.replace("[*][url=[Mason thread]]Mason PT[/url]", "")
     return post
 
 def sendRolePM(browser, recipient, role):
@@ -191,14 +191,14 @@ def gameEvents():
             if v.startswith('mafia'):
                 mafiaActions.append(f'[*][color=indigo]{k}[/color] is {role_verbs[v]}ing [color=green]___[/color].\n')
                 reminders.append(f'''{k}, {v} didn't submit their night actions:
-                    [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to kill and/or {v} tonight, if anybody.[/code]''')
+                    [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to {role_verbs[v]} kill tonight, if anybody.[/code]''')
             else:
                 if role_verbs[v].endswith('e'):
                     townActions.append(f'[*][color=green]{k}[/color] is {role_verbs[v][:-1]}ing [color=white]___[/color].\n')
                 else:
                     townActions.append(f'[*][color=green]{k}[/color] is {role_verbs[v]}ing [color=white]___[/color].\n')
                 reminders.append(f'''{k}, {v} didn't submit their night actions:
-                    [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to {v} tonight, if anybody.[/code]''')
+                    [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to {role_verbs[v]} tonight, if anybody.[/code]''')
 
     for n in range(1,4):
         event = event + f"[area=night {n}][list]"
@@ -239,9 +239,9 @@ def updateThread(browser, whichThread, post):
     WebDriverWait(browser, 60).until(EC.title_contains('Information'))
 
 role_verbs={
-    'mafia 1-shot strongman' : 'strongman kill',
-    'mafia roleblocker' : 'roleblock',
-    'mafia rolecop' : 'rolecop',
+    'mafia 1-shot strongman' : 'strongman',
+    'mafia roleblocker' : 'roleblock and/or',
+    'mafia rolecop' : 'rolecop and/or',
     'town babysitter' : 'babysit',
     'town cop' : 'investigate',
     'town doctor' : 'protect',
@@ -365,6 +365,7 @@ MASON1 = '[Mason1]'
 MASON2 = '[Mason2]'
 MASONTHREAD = '[Mason thread]'
 MAFIATHREAD = '[Mafia thread]'
+PUBLICTHREAD = '[Public thread]'
 
 #create sample role PMs for public thread and mafia private thread
 MAFIATHREAD = 'mafia PT' # can't have the mafia link in these
