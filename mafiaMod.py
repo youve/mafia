@@ -426,19 +426,17 @@ browser = webdriver.Firefox()
 # fill in any variables we need then make the public thread:
 
 DESCRIPTION = makeGameDescription()
+DEADLINE = datetime.datetime.now() + datetime.timedelta(days=2, minutes=30)
+DEADLINE = DEADLINE - datetime.timedelta(minutes=DEADLINE.minute % 15, seconds=DEADLINE.second, microseconds=DEADLINE.microsecond)
+print(f'{datetime.datetime.strftime(DEADLINE, "%Y %j %H:%M:%S")} day 1 starts')
+DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
+print(f'[countdown]{DEADLINE}[/countdown]')
 PUBLICTHREAD = makeOP(browser, "public")
 lockThread(browser, PUBLICTHREAD)
 
 # fill in a few last variables and make the mod thread
 EVENTS, NIGHTACTIONREMINDERS = gameEvents()
 MODTHREAD = makeOP(browser, "mod", mods=[args.listmod])
-
-# fill in a few last variables and make the mafia thread
-DEADLINE = datetime.datetime.now() + datetime.timedelta(days=2, minutes=30)
-DEADLINE = DEADLINE - datetime.timedelta(minutes=DEADLINE.minute % 15, seconds=DEADLINE.second, microseconds=DEADLINE.microsecond)
-print(f'{datetime.datetime.strftime(DEADLINE, "%Y %j %H:%M:%S")} day 1 starts')
-DEADLINE = DEADLINE.isoformat(sep=" ", timespec="seconds")
-print(f'[countdown]{DEADLINE}[/countdown]')
 
 #fill in a few last variables and make the mafia thread
 MAFIAPICTURE = input("Picture for MAFIA thread: ")
