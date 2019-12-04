@@ -10,12 +10,17 @@ import random
 import pprint
 import readline
 import datetime
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import re
 import time
+
+try: #try to get playerlist from clipboard
+    from selenium import webdriver
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+except ModuleNotFoundError:
+    print('Selenium module not found. Get it from https://pypi.org/project/selenium/ ')
+    sys.exit()
 
 #TODO: prepare PM to listmod
 
