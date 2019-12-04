@@ -6,7 +6,7 @@ shuffledPlayers = players[:]
 random.shuffle(shuffledPlayers)
 
 #assign roles
-roles = dict(zip(shuffledPlayers,setups[setup]))
+roles = dict(zip(shuffledPlayers,subsetup))
 
 for k, v in roles.items():
     print(f"{v}: {k}")[/code]
