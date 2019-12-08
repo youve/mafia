@@ -116,8 +116,8 @@ def preparePost(post, rolePM=False):
     placeholders = ['GAMENUMBER', 'GAMETITLE', 'DESCRIPTION', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
             'MAFIATHREAD', 'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD', 'MASONTHREAD',
             'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 'MASONPLAYERLIST', 'PLAYERLIST',
-            'ROLES', 'EVENTS', 'YOUTUBE', 'NIGHTACTIONREMINDERS', 'DEADLINE',
-            'DEADPICTURE', 'DEADTEXT', 'DEADLINK', 'DEADTITLE',
+            'ROLES', 'EVENTS', 'YOUTUBE', 'NIGHTACTIONREMINDERS', 'DEADLINE', LISTMOD, GAMEMOD,
+            'DEADPICTURE', 'DEADTEXT', 'DEADLINK', 'DEADTITLE', SPECTATORS,
             'MAFIAPICTURE', 'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE',
             'MAFIAONEROLE', 'MAFIAONEPLAYER', 'MAFIAONECOLOUR',
             'MAFIATWOROLE', 'MAFIATWOPLAYER', 'MAFIATWOCOLOUR',
@@ -131,9 +131,9 @@ def preparePost(post, rolePM=False):
             #post = re.sub(placeholder, f'{placeholder}', post)
             #TODO: find a way to do this without eval
             post = re.sub(placeholder, eval(placeholder), post)
-            post = post.replace("via [url][/url]", "")
-            post = post.replace("[url][/url]", "")
-            post = post.replace("[*][url=[Mason thread]]Mason PT[/url]", "")
+            post = post.replace("via [url=][/url]", "")
+            post = post.replace("[url=][/url]", "")
+            post = post.replace("[*][url=Mason PT]Mason PT[/url]", "")
     return post
 
 def sendRolePM(browser, recipient, role):
@@ -322,7 +322,7 @@ parser.add_argument('--setup', metavar='setup', type=str, choices=setups.keys(),
 parser.add_argument('subsetup', metavar='subsetup', type=str, help='A1, 12, C, etc')
 parser.add_argument('number', metavar='gamenumber', type=int, help="Game number")
 parser.add_argument('title', metavar="gametitle", type=str, help="Name of the theme")
-parser.add_argument('-u', '--username', metavar="username", type=str, help="Moderator's username")
+parser.add_argument('username', metavar="username", type=str, help="Moderator's username")
 parser.add_argument('-l', '--listmod', metavar='listmod', type=str, help='Listmod\'s username', default='PenguinPower', nargs='?')
 parser.add_argument('totalPlayers', metavar="totalPlayers", type=int, help="How many players", nargs='?', default=9)
 parser.add_argument('-s', '--spectators', metavar="spectators", type=str, help="'Spectator1 Spectator2'", nargs='?')
@@ -339,6 +339,12 @@ if not args.title:
 
 GAMENUMBER = str(args.number)
 GAMETITLE = args.title
+GAMEMOD = args.username
+LISTMOD = args.listmod
+if args.spectators:
+    SPECTATORS = ', '.join(args.spectators)
+else:
+    SPECTATORS = ''
 players = []
 
 try: #try to get playerlist from clipboard
