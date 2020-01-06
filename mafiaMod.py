@@ -116,8 +116,8 @@ def preparePost(post, rolePM=False):
     placeholders = ['GAMENUMBER', 'GAMETITLE', 'DESCRIPTION', 'SAMPLETOWNPMS', 'SAMPLEMAFIAPMS',
             'MAFIATHREAD', 'PUBLICTHREAD', 'ICTHREAD', 'DEADTHREAD', 'MODTHREAD', 'MASONTHREAD',
             'NUMBEREDPLAYERLIST', 'COLOUREDPLAYERLIST', 'MASONPLAYERLIST', 'PLAYERLIST',
-            'ROLES', 'EVENTS', 'YOUTUBE', 'NIGHTACTIONREMINDERS', 'DEADLINE', LISTMOD, GAMEMOD,
-            'DEADPICTURE', 'DEADTEXT', 'DEADLINK', 'DEADTITLE', SPECTATORS,
+            'ROLES', 'EVENTS', 'YOUTUBE', 'NIGHTACTIONREMINDERS', 'DEADLINE', 'LISTMOD', 'GAMEMOD',
+            'DEADPICTURE', 'DEADTEXT', 'DEADLINK', 'DEADTITLE', 'SPECTATORS',
             'MAFIAPICTURE', 'MAFIATEXT', 'MAFIALINK', 'MAFIATITLE',
             'MAFIAONEROLE', 'MAFIAONEPLAYER', 'MAFIAONECOLOUR',
             'MAFIATWOROLE', 'MAFIATWOPLAYER', 'MAFIATWOCOLOUR',
@@ -133,7 +133,7 @@ def preparePost(post, rolePM=False):
             post = re.sub(placeholder, eval(placeholder), post)
             post = post.replace("via [url=][/url]", "")
             post = post.replace("[url=][/url]", "")
-            post = post.replace("[*][url=Mason PT]Mason PT[/url]", "")
+            post = post.replace("[*][url=mason PT]Mason PT[/url]", "")
     return post
 
 def sendRolePM(browser, recipient, role):
@@ -196,7 +196,7 @@ def gameEvents():
             if v.startswith('mafia'):
                 mafiaActions.append(f'[*][color=indigo]{k}[/color] is {role_verbs[v]}ing [color=green]___[/color].\n')
                 reminders.append(f'''{k}, {v} didn't submit their night actions:
-                    [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to {role_verbs[v]} kill tonight, if anybody.[/code]''')
+                    [code]This is just a reminder that you have [countdown]1 day[/countdown] to figure out who you're going to {role_verbs[v]} and/or kill tonight, if anybody.[/code]''')
             else:
                 if role_verbs[v].endswith('e'):
                     townActions.append(f'[*][color=green]{k}[/color] is {role_verbs[v][:-1]}ing [color=white]___[/color].\n')
@@ -245,8 +245,8 @@ def updateThread(browser, whichThread, post):
 
 role_verbs={
     'mafia 1-shot strongman' : 'strongman',
-    'mafia roleblocker' : 'roleblock and/or',
-    'mafia rolecop' : 'rolecop and/or',
+    'mafia roleblocker' : 'roleblock',
+    'mafia rolecop' : 'rolecop',
     'town babysitter' : 'babysit',
     'town cop' : 'investigate',
     'town doctor' : 'protect',
