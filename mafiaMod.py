@@ -133,7 +133,7 @@ def preparePost(post, rolePM=False):
             post = re.sub(placeholder, eval(placeholder), post)
             post = post.replace("via [url=][/url]", "")
             post = post.replace("[url=][/url]", "")
-            post = post.replace("[*][url=mason PT]Mason PT[/url]", "")
+            post = post.replace("[*][url=mason PT]Mason PT[/url]\n", "")
     return post
 
 def sendRolePM(browser, recipient, role):
