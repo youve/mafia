@@ -187,7 +187,7 @@ def makeGameDescription():
 def gameEvents():
     '''Create a list of what happened during the game for posting in the mod PT'''
     print('\nCreating game events\n')
-    event = "[area=day 1][list][*]___ is lynched with _ scum on ___ wagon.[/list][/area]\n\n"
+    event = "[area=day 1][list][*]___ is eliminated with _ scum on ___ wagon.[/list][/area]\n\n"
     townActions = []
     mafiaActions = ['[*][color=purple]___[/color] is killing [color=green]___[/color].\n']
     reminders = []
@@ -212,7 +212,7 @@ def gameEvents():
         for action in mafiaActions:
             event = event + action
         event = event + '[/list][/area]\n\n'
-        event = event + f"[area=day {n+1}][list][*]___ is lynched with _ scum on ___ wagon.[/list][/area]\n\n"
+        event = event + f"[area=day {n+1}][list][*]___ is eliminated with _ scum on ___ wagon.[/list][/area]\n\n"
     return event, '\n\n'.join(reminders)
 
 def lockThread(browser, whichThread):
@@ -470,7 +470,7 @@ DEADLINK = input("Link for dead thread: ")
 DEADTITLE = input("Title for dead thread link: ")
 DEADTHREAD = makeOP(browser, "dead", users=args.spectators, mods=[args.listmod])
 
-YOUTUBE = input("Type a youtube video for day 1 lynch: ")
+YOUTUBE = input("Type a youtube video for day 1 elimination: ")
 YOUTUBE = YOUTUBE.replace('https://www.youtube.com/watch?v=', '')
 modFiles = listFiles('mod')
 for file in range(1,len(modFiles)):
